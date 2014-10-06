@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="WISDEM 0.1.0 documentation" href="index.html" />
-    <link rel="next" title="4.3.1. wisdem.turbinese.turbine.configure_turbine" href="generated/wisdem.turbinese.turbine.configure_turbine.html" />
+    <link rel="next" title="4.4.1. wisdem.turbinese.turbine.configure_turbine" href="generated/wisdem.turbinese.turbine.configure_turbine.html" />
     <link rel="prev" title="3. Tutorial" href="tutorial.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="generated/wisdem.turbinese.turbine.configure_turbine.html" title="4.3.1. wisdem.turbinese.turbine.configure_turbine"
+          <a href="generated/wisdem.turbinese.turbine.configure_turbine.html" title="4.4.1. wisdem.turbinese.turbine.configure_turbine"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="tutorial.html" title="3. Tutorial"
@@ -213,8 +213,89 @@
 
 </div>
 </div>
+<div class="section" id="documentation-for-wisdem-using-se-models">
+<h2>4.3. Documentation for WISDEM using SE Models<a class="headerlink" href="#documentation-for-wisdem-using-se-models" title="Permalink to this headline">¶</a></h2>
+<p>The following inputs and outputs are defined for WISDEM:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">lcoe_se_assembly</span><span class="p">(</span><span class="n">Assembly</span><span class="p">):</span>
+
+    <span class="c"># Base I/O</span>
+    <span class="c"># Inputs</span>
+    <span class="n">turbine_number</span> <span class="o">=</span> <span class="n">Int</span><span class="p">(</span><span class="n">iotype</span> <span class="o">=</span> <span class="s">&#39;in&#39;</span><span class="p">,</span> <span class="n">desc</span> <span class="o">=</span> <span class="s">&#39;number of turbines at plant&#39;</span><span class="p">)</span>
+
+    <span class="c">#Outputs</span>
+    <span class="n">turbine_cost</span> <span class="o">=</span> <span class="n">Float</span><span class="p">(</span><span class="n">iotype</span><span class="o">=</span><span class="s">&#39;out&#39;</span><span class="p">,</span> <span class="n">desc</span> <span class="o">=</span> <span class="s">&#39;A Wind Turbine Capital _cost&#39;</span><span class="p">)</span>
+    <span class="n">bos_costs</span> <span class="o">=</span> <span class="n">Float</span><span class="p">(</span><span class="n">iotype</span><span class="o">=</span><span class="s">&#39;out&#39;</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s">&#39;A Wind Plant Balance of Station _cost Model&#39;</span><span class="p">)</span>
+    <span class="n">avg_annual_opex</span> <span class="o">=</span> <span class="n">Float</span><span class="p">(</span><span class="n">iotype</span><span class="o">=</span><span class="s">&#39;out&#39;</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s">&#39;A Wind Plant Operations Expenditures Model&#39;</span><span class="p">)</span>
+    <span class="n">net_aep</span> <span class="o">=</span> <span class="n">Float</span><span class="p">(</span><span class="n">iotype</span><span class="o">=</span><span class="s">&#39;out&#39;</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s">&#39;A Wind Plant Annual Energy Production Model&#39;</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s">&#39;kW*h&#39;</span><span class="p">)</span>
+    <span class="n">coe</span> <span class="o">=</span> <span class="n">Float</span><span class="p">(</span><span class="n">iotype</span><span class="o">=</span><span class="s">&#39;out&#39;</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s">&#39;Levelized cost of energy for the wind plant&#39;</span><span class="p">)</span>
+    <span class="n">opex_breakdown</span> <span class="o">=</span> <span class="n">VarTree</span><span class="p">(</span><span class="n">OPEXVarTree</span><span class="p">(),</span><span class="n">iotype</span><span class="o">=</span><span class="s">&#39;out&#39;</span><span class="p">)</span>
+    <span class="n">bos_breakdown</span> <span class="o">=</span> <span class="n">VarTree</span><span class="p">(</span><span class="n">BOSVarTree</span><span class="p">(),</span> <span class="n">iotype</span><span class="o">=</span><span class="s">&#39;out&#39;</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s">&#39;BOS cost breakdown&#39;</span><span class="p">)</span>
+
+    <span class="c"># Configuration options</span>
+    <span class="n">with_new_nacelle</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span><span class="bp">False</span><span class="p">,</span> <span class="n">iotype</span><span class="o">=</span><span class="s">&#39;in&#39;</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s">&#39;configure with DriveWPACT if false, else configure with DriveSE&#39;</span><span class="p">)</span>
+    <span class="n">with_landbose</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span><span class="bp">False</span><span class="p">,</span> <span class="n">iotype</span><span class="o">=</span><span class="s">&#39;in&#39;</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s">&#39;configure with CSM BOS if flase, else configure with new LandBOS model&#39;</span><span class="p">)</span>
+    <span class="n">flexible_blade</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span><span class="bp">False</span><span class="p">,</span> <span class="n">iotype</span><span class="o">=</span><span class="s">&#39;in&#39;</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s">&#39;configure rotor with flexible blade if True&#39;</span><span class="p">)</span>
+    <span class="n">with_3pt_drive</span> <span class="o">=</span> <span class="n">Bool</span><span class="p">(</span><span class="bp">False</span><span class="p">,</span> <span class="n">iotype</span><span class="o">=</span><span class="s">&#39;in&#39;</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s">&#39;only used if configuring DriveSE - selects 3 pt or 4 pt design option&#39;</span><span class="p">)</span> <span class="c"># TODO: change nacelle selection to enumerated rather than nested boolean</span>
+
+    <span class="c"># Other I/O</span>
+    <span class="n">eta_strain</span> <span class="o">=</span> <span class="n">Float</span><span class="p">(</span><span class="mf">1.35</span><span class="o">*</span><span class="mf">1.3</span><span class="o">*</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">iotype</span><span class="o">=</span><span class="s">&#39;in&#39;</span><span class="p">)</span>
+    <span class="n">eta_dfl</span> <span class="o">=</span> <span class="n">Float</span><span class="p">(</span><span class="mf">1.35</span><span class="o">*</span><span class="mf">1.1</span><span class="o">*</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">iotype</span><span class="o">=</span><span class="s">&#39;in&#39;</span><span class="p">)</span>
+    <span class="n">strain_ult_spar</span> <span class="o">=</span> <span class="n">Float</span><span class="p">(</span><span class="mf">1.0e-2</span><span class="p">,</span> <span class="n">iotype</span><span class="o">=</span><span class="s">&#39;in&#39;</span><span class="p">)</span>
+    <span class="n">strain_ult_te</span> <span class="o">=</span> <span class="n">Float</span><span class="p">(</span><span class="mi">2500</span><span class="o">*</span><span class="mf">1e-6</span><span class="p">,</span> <span class="n">iotype</span><span class="o">=</span><span class="s">&#39;in&#39;</span><span class="p">)</span>
+    <span class="c"># idx_strain = Array([0, 12, 14, 18, 22, 28, 34], iotype=&#39;in&#39;, dtype=np.int)</span>
+    <span class="c"># idx_buckling = Array([10, 12, 14, 20, 23, 27, 31, 33], iotype=&#39;in&#39;, dtype=np.int)</span>
+    <span class="n">freq_margin</span> <span class="o">=</span> <span class="n">Float</span><span class="p">(</span><span class="mf">1.1</span><span class="p">,</span> <span class="n">iotype</span><span class="o">=</span><span class="s">&#39;in&#39;</span><span class="p">)</span>
+    <span class="n">min_ground_clearance</span> <span class="o">=</span> <span class="n">Float</span><span class="p">(</span><span class="mf">20.0</span><span class="p">,</span> <span class="n">iotype</span><span class="o">=</span><span class="s">&#39;in&#39;</span><span class="p">)</span>
+    <span class="c"># idx_tower_stress = Array([0, 4, 8, 10, 12, 14], iotype=&#39;in&#39;, dtype=np.int)</span>
+    <span class="c"># idx_tower_fatigue = Array([0, 3, 6, 9, 12, 15, 18, 20], iotype=&#39;in&#39;, dtype=np.int)</span>
+</pre></div>
+</div>
+<div class="section" id="id2">
+<h3>4.3.1. Referenced Model<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<span class="target" id="module-wisdem.lcoe.lcoe_se_csm_assembly"></span><dl class="class">
+<dt id="wisdem.lcoe.lcoe_se_csm_assembly.lcoe_se_assembly">
+<em class="property">class </em><tt class="descclassname">wisdem.lcoe.lcoe_se_csm_assembly.</tt><tt class="descname">lcoe_se_assembly</tt><a class="reference internal" href="_modules/wisdem/lcoe/lcoe_se_csm_assembly.html#lcoe_se_assembly"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wisdem.lcoe.lcoe_se_csm_assembly.lcoe_se_assembly" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="wisdem.lcoe.lcoe_se_csm_assembly.configure_lcoe_se">
+<tt class="descclassname">wisdem.lcoe.lcoe_se_csm_assembly.</tt><tt class="descname">configure_lcoe_se</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/wisdem/lcoe/lcoe_se_csm_assembly.html#configure_lcoe_se"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wisdem.lcoe.lcoe_se_csm_assembly.configure_lcoe_se" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="wisdem.lcoe.lcoe_se_csm_assembly.configure_lcoe_with_turb_costs">
+<tt class="descclassname">wisdem.lcoe.lcoe_se_csm_assembly.</tt><tt class="descname">configure_lcoe_with_turb_costs</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/wisdem/lcoe/lcoe_se_csm_assembly.html#configure_lcoe_with_turb_costs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wisdem.lcoe.lcoe_se_csm_assembly.configure_lcoe_with_turb_costs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="wisdem.lcoe.lcoe_se_csm_assembly.configure_lcoe_with_csm_bos">
+<tt class="descclassname">wisdem.lcoe.lcoe_se_csm_assembly.</tt><tt class="descname">configure_lcoe_with_csm_bos</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/wisdem/lcoe/lcoe_se_csm_assembly.html#configure_lcoe_with_csm_bos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wisdem.lcoe.lcoe_se_csm_assembly.configure_lcoe_with_csm_bos" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="wisdem.lcoe.lcoe_se_csm_assembly.configure_lcoe_with_landbos">
+<tt class="descclassname">wisdem.lcoe.lcoe_se_csm_assembly.</tt><tt class="descname">configure_lcoe_with_landbos</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/wisdem/lcoe/lcoe_se_csm_assembly.html#configure_lcoe_with_landbos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wisdem.lcoe.lcoe_se_csm_assembly.configure_lcoe_with_landbos" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="wisdem.lcoe.lcoe_se_csm_assembly.configure_lcoe_with_csm_opex">
+<tt class="descclassname">wisdem.lcoe.lcoe_se_csm_assembly.</tt><tt class="descname">configure_lcoe_with_csm_opex</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/wisdem/lcoe/lcoe_se_csm_assembly.html#configure_lcoe_with_csm_opex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wisdem.lcoe.lcoe_se_csm_assembly.configure_lcoe_with_csm_opex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="wisdem.lcoe.lcoe_se_csm_assembly.configure_lcoe_with_basic_aep">
+<tt class="descclassname">wisdem.lcoe.lcoe_se_csm_assembly.</tt><tt class="descname">configure_lcoe_with_basic_aep</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/wisdem/lcoe/lcoe_se_csm_assembly.html#configure_lcoe_with_basic_aep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wisdem.lcoe.lcoe_se_csm_assembly.configure_lcoe_with_basic_aep" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="wisdem.lcoe.lcoe_se_csm_assembly.configure_lcoe_with_csm_fin">
+<tt class="descclassname">wisdem.lcoe.lcoe_se_csm_assembly.</tt><tt class="descname">configure_lcoe_with_csm_fin</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/wisdem/lcoe/lcoe_se_csm_assembly.html#configure_lcoe_with_csm_fin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wisdem.lcoe.lcoe_se_csm_assembly.configure_lcoe_with_csm_fin" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+</div>
 <div class="section" id="module-wisdem.turbinese.turbine">
-<span id="documentation-for-wisdem-turbine-assembly"></span><h2>4.3. Documentation for WISDEM Turbine Assembly<a class="headerlink" href="#module-wisdem.turbinese.turbine" title="Permalink to this headline">¶</a></h2>
+<span id="documentation-for-wisdem-turbine-assembly"></span><h2>4.4. Documentation for WISDEM Turbine Assembly<a class="headerlink" href="#module-wisdem.turbinese.turbine" title="Permalink to this headline">¶</a></h2>
 <p id="interfaces-label">For this assembly the configure process is handled in a separate function.  This allows for additional options to be passed in (as noted in the linked documentation below), but more importantly allows it to be used in a larger assembly while still retaining a flat manner.  Creating multiple levels of nested assemblies is generally not advisable.  This is what is done when linking the cost models with the turbine models.  All of the configuring can be done in one flat assembly.</p>
 <table border="1" class="longtable docutils">
 <colgroup>
@@ -254,7 +335,11 @@
 <li><a class="reference internal" href="#id1">4.2.1. Referenced Model</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-wisdem.turbinese.turbine">4.3. Documentation for WISDEM Turbine Assembly</a></li>
+<li><a class="reference internal" href="#documentation-for-wisdem-using-se-models">4.3. Documentation for WISDEM using SE Models</a><ul>
+<li><a class="reference internal" href="#id2">4.3.1. Referenced Model</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-wisdem.turbinese.turbine">4.4. Documentation for WISDEM Turbine Assembly</a></li>
 </ul>
 </li>
 </ul>
@@ -264,7 +349,7 @@
                         title="previous chapter">3. Tutorial</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="generated/wisdem.turbinese.turbine.configure_turbine.html"
-                        title="next chapter">4.3.1. wisdem.turbinese.turbine.configure_turbine</a></p>
+                        title="next chapter">4.4.1. wisdem.turbinese.turbine.configure_turbine</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/documentation.txt"
@@ -294,7 +379,7 @@
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="generated/wisdem.turbinese.turbine.configure_turbine.html" title="4.3.1. wisdem.turbinese.turbine.configure_turbine"
+          <a href="generated/wisdem.turbinese.turbine.configure_turbine.html" title="4.4.1. wisdem.turbinese.turbine.configure_turbine"
              >next</a> |</li>
         <li class="right" >
           <a href="tutorial.html" title="3. Tutorial"

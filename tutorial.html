@@ -201,11 +201,18 @@
 </pre></div>
 </div>
 <p>We can now simulate the overall wind plant cost of energy.</p>
-<div class="highlight-python"><div class="highlight"><pre>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">lcoe</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>We then print out the resulting cost values:</p>
-<div class="highlight-python"><div class="highlight"><pre>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">print</span> <span class="s">&quot;Cost of Energy results for a 500 MW offshore wind farm using the NREL 5 MW reference turbine&quot;</span>
+<span class="k">print</span> <span class="s">&quot;LCOE: ${0:.4f} USD/kWh&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lcoe</span><span class="o">.</span><span class="n">lcoe</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&quot;COE: ${0:.4f} USD/kWh&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lcoe</span><span class="o">.</span><span class="n">coe</span><span class="p">)</span>
+<span class="k">print</span>
+<span class="k">print</span> <span class="s">&quot;AEP per turbine: {0:1f} kWh/turbine&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lcoe</span><span class="o">.</span><span class="n">net_aep</span> <span class="o">/</span> <span class="n">lcoe</span><span class="o">.</span><span class="n">turbine_number</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&quot;Turbine Cost: ${0:2f} USD&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lcoe</span><span class="o">.</span><span class="n">turbine_cost</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&quot;BOS costs per turbine: ${0:2f} USD/turbine&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lcoe</span><span class="o">.</span><span class="n">bos_costs</span> <span class="o">/</span> <span class="n">lcoe</span><span class="o">.</span><span class="n">turbine_number</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&quot;OPEX per turbine: ${0:2f} USD/turbine&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lcoe</span><span class="o">.</span><span class="n">avg_annual_opex</span> <span class="o">/</span> <span class="n">lcoe</span><span class="o">.</span><span class="n">turbine_number</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The result is:</p>
@@ -220,8 +227,154 @@
 </pre></div>
 </div>
 </div>
+<div class="section" id="tutorial-for-wisdem-with-se-models">
+<h2>3.3. Tutorial for WISDEM with SE Models<a class="headerlink" href="#tutorial-for-wisdem-with-se-models" title="Permalink to this headline">¶</a></h2>
+<p>We can also use the new systems engineering WISDEM modules for assessing plant cost of energy.  In this example, we add the new turbine systems engineering and cost models along with the NREL CSM plant energy production and plant cost models.  First we create the assembly with a set of options.  Here we are setting up the lcoe_se_assembly with the new DriveSE 4-pt configuration nacelle, the NREL CSM balance of station model and a rigid blade.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">wisdem.lcoe.lcoe_se_csm_assembly</span> <span class="kn">import</span> <span class="n">lcoe_se_assembly</span>
+
+<span class="n">with_new_nacelle</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">with_landbos</span> <span class="o">=</span> <span class="bp">False</span>
+<span class="n">flexible_blade</span> <span class="o">=</span> <span class="bp">False</span>
+<span class="n">with_3pt_drive</span> <span class="o">=</span> <span class="bp">False</span>
+<span class="n">sea_depth</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="n">wind_class</span> <span class="o">=</span> <span class="s">&#39;I&#39;</span>
+
+<span class="c"># === Create LCOE SE assembly ========</span>
+<span class="n">lcoe_se</span> <span class="o">=</span> <span class="n">lcoe_se_assembly</span><span class="p">(</span><span class="n">with_new_nacelle</span><span class="p">,</span><span class="n">with_landbos</span><span class="p">,</span><span class="n">flexible_blade</span><span class="p">,</span><span class="n">with_3pt_drive</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Next we need to set up the LCOE level inputs for the analysis and several inputs for the sub-modules.</p>
+<div class="highlight-python"><div class="highlight"><pre>    lcoe_se.sea_depth = sea_depth # 0.0 for land-based turbine
+    lcoe_se.turbine_number = 100
+    lcoe_se.year = 2009
+    lcoe_se.month = 12
+
+    rotor = lcoe_se.rotor
+    nacelle = lcoe_se.nacelle
+    tower = lcoe_se.tower
+    tcc_a = lcoe_se.tcc_a
+    # bos_a = lcoe_se.bos_a
+    # opex_a = lcoe_se.opex_a
+    aep_a = lcoe_se.aep_a
+    fin_a = lcoe_se.fin_a
+
+    # Turbine ===========
+    from wisdem.reference_turbines.nrel5mw.nrel5mw import configure_nrel5mw_turbine
+    configure_nrel5mw_turbine(rotor,nacelle,tower,wind_class,lcoe_se.sea_depth)
+
+    # TODO: these should be specified at the turbine level and connected to other system inputs
+    lcoe_se.tower_d = [6.0, 4.935, 3.87]  # (Array, m): diameters along tower
+    lcoe_se.generator_speed = 1173.7  # (Float, rpm)  # generator speed
+    # extra variable constant for now
+    #lcoe_se.nacelle.bedplate.rotor_bending_moment_y = -2.3250E+06 # shouldnt be needed anymore
+
+    # additional 5 MW reference variables #TODO: these should go into turbine level
+    lcoe_se.strain_ult_spar = rotor.strain_ult_spar
+    lcoe_se.strain_ult_te = rotor.strain_ult_te
+    lcoe_se.eta_strain = 1.35*1.3*1.0
+    lcoe_se.eta_dfl = 1.35*1.1*1.0
+    lcoe_se.freq_margin = 1.1
+    lcoe_se.min_ground_clearance = 20.0
+
+    # tcc ====
+    tcc_a.advanced_blade = True
+    tcc_a.offshore = False
+    tcc_a.assemblyCostMultiplier = 0.30
+    tcc_a.profitMultiplier = 0.20
+    tcc_a.overheadCostMultiplier = 0.0
+    tcc_a.transportMultiplier = 0.0
+
+    # for new landBOS
+    &#39;&#39;&#39; # === new landBOS ===
+    lcoe_se.voltage = 137
+    lcoe_se.distInter = 5
+    lcoe_se.terrain = &#39;FLAT_TO_ROLLING&#39;
+    lcoe_se.layout = &#39;SIMPLE&#39;
+    lcoe_se.soil = &#39;STANDARD&#39; &#39;&#39;&#39;
+
+    # aep ====
+    aep_a.array_losses = 0.059
+    aep_a.other_losses = 0.0
+    aep_a.availability = 0.94
+
+    # fin ===
+    fin_a.fixed_charge_rate = 0.095
+    fin_a.construction_finance_rate = 0.0
+    fin_a.tax_rate = 0.4
+    fin_a.discount_rate = 0.07
+    fin_a.construction_time = 1.0
+    fin_a.project_lifetime = 20.0
+
+    # Set plant level inputs ===
+    shearExp = 0.2 #TODO : should be an input to lcoe
+    rotor.cdf_reference_height_wind_speed = 90.0
+    aep_a.array_losses = 0.15
+    aep_a.other_losses = 0.0
+    aep_a.availability = 0.98
+    rotor.turbulence_class = &#39;B&#39;
+    lcoe_se.bos_a.multiplier = 2.23
+
+    if wind_class == &#39;Offshore&#39;:
+        # rotor.turbulence_class = &#39;B&#39;
+        # rotor.cdf_reference_mean_wind_speed = 8.4
+        # rotor.cdf_reference_height_wind_speed = 50.0
+        # rotor.weibull_shape = 2.1
+        shearExp = 0.14 # TODO : should be an input to lcoe
+        # aep_a.array_losses = 0.15
+        # aep_a.other_losses = 0.0
+        aep_a.availability = 0.96
+        tcc_a.offshore = True
+        lcoe_se.bos_a.multiplier = 2.33
+        lcoe_se.fin_a.fixed_charge_rate = 0.118
+
+    rotor.shearExp = shearExp
+    tower.wind1.shearExp = shearExp
+    tower.wind2.shearExp = shearExp
+</pre></div>
+</div>
+<p>Then we run the lcoe analysis.</p>
+<div class="highlight-python"><div class="highlight"><pre>    <span class="n">lcoe_se</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Finally we print the values from the analysis.</p>
+<div class="highlight-python"><div class="highlight"><pre>    print &quot;Key Turbine Outputs for NREL 5 MW Reference Turbine&quot;
+    print &#39;mass rotor blades (kg) =&#39;, lcoe_se.rotor.mass_all_blades
+    print &#39;mass hub system (kg) =&#39;, lcoe_se.hub.hub_system_mass
+    print &#39;mass nacelle (kg) =&#39;, lcoe_se.nacelle.nacelle_mass
+    print &#39;mass tower (kg) =&#39;, lcoe_se.tower.mass
+    print &#39;maximum tip deflection (m) =&#39;, lcoe_se.maxdeflection.max_tip_deflection
+    print &#39;ground clearance (m) =&#39;, lcoe_se.maxdeflection.ground_clearance
+    print
+    print &quot;Key Plant Outputs for wind plant with NREL 5 MW Turbine&quot;
+    #print &quot;LCOE: ${0:.4f} USD/kWh&quot;.format(lcoe_se.lcoe) # not in base output set (add to assembly output if desired)
+    print &quot;COE: ${0:.4f} USD/kWh&quot;.format(lcoe_se.coe)
+    print
+    print &quot;AEP per turbine: {0:1f} kWh/turbine&quot;.format(lcoe_se.net_aep / lcoe_se.turbine_number)
+    print &quot;Turbine Cost: ${0:2f} USD&quot;.format(lcoe_se.turbine_cost)
+    print &quot;BOS costs per turbine: ${0:2f} USD/turbine&quot;.format(lcoe_se.bos_costs / lcoe_se.turbine_number)
+    print &quot;OPEX per turbine: ${0:2f} USD/turbine&quot;.format(lcoe_se.avg_annual_opex / lcoe_se.turbine_number)    
+</pre></div>
+</div>
+<p>The results should be:</p>
+<div class="highlight-python"><div class="highlight"><pre>&gt;&gt;&gt; Key Turbine Outputs for NREL 5 MW Reference Turbine
+&gt;&gt;&gt; mass rotor blades (kg) = 54674.7959412
+&gt;&gt;&gt; mass hub system (kg) = 37118.3606357
+&gt;&gt;&gt; mass nacelle (kg) = 193805.649876
+&gt;&gt;&gt; mass tower (kg) = 358230.152841
+&gt;&gt;&gt; maximum tip deflection (m) = 10.6526326093
+&gt;&gt;&gt; ground clearance (m) = 28.4361396283
+&gt;&gt;&gt;
+&gt;&gt;&gt; Key Plant Outputs for wind plant with NREL 5 MW Turbine
+&gt;&gt;&gt; COE: $0.0654 USD/kWh
+&gt;&gt;&gt; AEP per turbine: 19566021.325794 kWh/turbine
+&gt;&gt;&gt; Turbine Cost: $5122974.187114 USD
+&gt;&gt;&gt; BOS costs per turbine: $6878279.755879 USD/turbine
+&gt;&gt;&gt; OPEX per turbine: $232156.470030 USD/turbine
+</pre></div>
+</div>
+</div>
 <div class="section" id="tutorial-for-turbine-assembly">
-<h2>3.3. Tutorial for Turbine Assembly<a class="headerlink" href="#tutorial-for-turbine-assembly" title="Permalink to this headline">¶</a></h2>
+<h2>3.4. Tutorial for Turbine Assembly<a class="headerlink" href="#tutorial-for-turbine-assembly" title="Permalink to this headline">¶</a></h2>
 <p>The turbine assembly is a nested assembly and contains subassemblies for the rotor, hub, nacelle, and tower.  Determining what inputs need to be set, and which are already connected through the assembly, can be challenging for one of these large assemblies.  There is a helper method <tt class="docutils literal"><span class="pre">print_vars</span></tt> in commonse noted below.  This can be particularly useful as the models are udpated and different variable sets are used.</p>
 <div class="highlight-python"><div class="highlight"><pre>    import os
     from rotorse.precomp import Profile, Orthotropic2DMaterial, CompositeSection  # TODO: can just pass file names and do this initialization inside of rotor
@@ -537,7 +690,8 @@
 <li><a class="reference internal" href="#">3. Tutorial</a><ul>
 <li><a class="reference internal" href="#tutorial-for-wisdem-with-nrel-csm">3.1. Tutorial for WISDEM with NREL CSM</a></li>
 <li><a class="reference internal" href="#tutorial-for-wisdem-with-nrel-csm-plus-ecn-offshore-opex-model">3.2. Tutorial for WISDEM with NREL CSM plus ECN Offshore OPEX Model</a></li>
-<li><a class="reference internal" href="#tutorial-for-turbine-assembly">3.3. Tutorial for Turbine Assembly</a></li>
+<li><a class="reference internal" href="#tutorial-for-wisdem-with-se-models">3.3. Tutorial for WISDEM with SE Models</a></li>
+<li><a class="reference internal" href="#tutorial-for-turbine-assembly">3.4. Tutorial for Turbine Assembly</a></li>
 </ul>
 </li>
 </ul>
