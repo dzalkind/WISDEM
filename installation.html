@@ -57,7 +57,7 @@
 <blockquote class="last">
 <div><p>General: NumPy, SciPy, OpenMDAO</p>
 <p>Wind Plant Framework: FUSED-Wind (Framework for Unified Systems Engineering and Design of Wind Plants)</p>
-<p>Sub-Models: CommonSE, AeroelasticSE, RotorSE, DriveSE, DriveWPACT, TowerSE, JacketSE, TurbineSE, Turbine_CostsSE, Plant_CostsSE, Plant_EnergySE, Plant_FinanceSEE</p>
+<p>Sub-Models: CommonSE, AeroelasticSE, RotorSE, DriveSE, DriveWPACT, TowerSE, JacketSE, Turbine_CostsSE, Plant_CostsSE, Plant_EnergySE, Plant_FinanceSEE</p>
 </div></blockquote>
 </div>
 <p>Clone the repository at <a class="reference external" href="https://github.com/WISDEM/WISDEM">https://github.com/WISDEM/WISDEM</a>
@@ -72,10 +72,12 @@ or download the releases and uncompress/unpack (WISDEM.py-0.1.0.tar.gz or WISDEM
 </div>
 <div class="highlight-python"><div class="highlight"><pre><span class="o">&gt;</span> <span class="kn">import</span> <span class="nn">wisdem.lcoe.lcoe_csm_assembly</span>
 <span class="o">&gt;</span> <span class="kn">import</span> <span class="nn">wisdem.lcoe.lcoe_se_csm_assembly</span>
+<span class="o">&gt;</span> <span class="kn">import</span> <span class="nn">wisdem.turbinese.turbine</span>
 </pre></div>
 </div>
 <p>or run the unit tests which include functional and gradient tests.  Analytic gradients are provided for variables only so warnings will appear for missing gradients on model input parameters; these can be ignored.</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>python src/test/test_WISDEM.py
+<span class="nv">$ </span>python src/test/test_turbine_gradients.py
 </pre></div>
 </div>
 <p>An &#8220;OK&#8221; signifies that all the tests passed.</p>
@@ -133,7 +135,7 @@ or download the releases and uncompress/unpack (WISDEM.py-0.1.0.tar.gz or WISDEM
     </div>
     <div class="footer">
         &copy; Copyright 2014, NREL.
-      Last updated on Sep 29, 2014.
+      Last updated on Oct 05, 2014.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
     </div>
   </body>
