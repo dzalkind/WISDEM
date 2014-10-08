@@ -55,18 +55,19 @@
 <div class="warning admonition">
 <p class="first admonition-title">prerequisites</p>
 <blockquote class="last">
-<div><p>General: NumPy, SciPy, OpenMDAO</p>
+<div><p>General: C compiler, Fortran compiler, NumPy, SciPy, Swig, pyWin32, MatlPlotLib, Lxml, OpenMDAO</p>
 <p>Wind Plant Framework: FUSED-Wind (Framework for Unified Systems Engineering and Design of Wind Plants)</p>
-<p>Sub-Models: CommonSE, AeroelasticSE, RotorSE, DriveSE, DriveWPACT, TowerSE, JacketSE, Turbine_CostsSE, Plant_CostsSE, Plant_EnergySE, Plant_FinanceSEE</p>
+<p>Sub-Models: CommonSE, AeroelasticSE, RotorSE, DriveSE, DriveWPACT, TowerSE, JacketSE, Turbine_CostsSE, Plant_CostsSE, Plant_EnergySE, Plant_FinanceSEE, pBEAM, CCBlade, Akima</p>
+<p>Supporting python packages: Pandas, Algopy, Zope.interface, Sphinx, Xlrd, PyOpt, py2exe, Pyzmq, Sphinxcontrib-bibtex, Sphinxcontrib-zopeext, Numpydoc, Ipython</p>
 </div></blockquote>
 </div>
 <p>Clone the repository at <a class="reference external" href="https://github.com/WISDEM/WISDEM">https://github.com/WISDEM/WISDEM</a>
-or download the releases and uncompress/unpack (WISDEM.py-0.1.0.tar.gz or WISDEM.py-0.1.0.zip)</p>
-<p>To install WISDEM, first activate the OpenMDAO environment and then install with the following command.</p>
-<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>plugin install
+or download the releases and uncompress/unpack (WISDEM.py-0.1.0.tar.gz or WISDEM.py-0.1.0.zip) from the website link at the bottom the <a href="#id1"><span class="problematic" id="id2">`WISDEM site&lt;http://nwtc.nrel.gov/WISDEM&gt;`_</span></a>.</p>
+<p>To install WISDEM, first activate the OpenMDAO environment and then install with the following command.  For full instructions for Windows, see the README.md file.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>python setup_all.py
 </pre></div>
 </div>
-<p>To check if installation was successful try to import the module</p>
+<p>To check if installation was successful try to import the module from within an activated OpenMDAO environment:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>python
 </pre></div>
 </div>
@@ -135,7 +136,7 @@ or download the releases and uncompress/unpack (WISDEM.py-0.1.0.tar.gz or WISDEM
     </div>
     <div class="footer">
         &copy; Copyright 2014, NREL.
-      Last updated on Oct 05, 2014.
+      Last updated on Oct 07, 2014.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
     </div>
   </body>
