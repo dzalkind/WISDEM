@@ -1,6 +1,0 @@
-wisdem.turbinese.turbine.configure_turbine
-==========================================
-
-.. currentmodule:: wisdem.turbinese.turbine
-
-.. autofunction:: configure_turbine
