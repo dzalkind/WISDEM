@@ -73,9 +73,9 @@ class spatialcoherance(object):
          self.SCMod1 = '"GENERAL"'
          self.SCMod2 = '"GENERAL"'
          self.SCMod3 = '"GENERAL"'
-         self.InCDec1 = [13.75, 0.04]
-         self.InCDec2 = [9.85, 0.0015]
-         self.InCDec3 = [9.5, 0.003]
+         self.InCDec1 = '"default"'
+         self.InCDec2 = '"default"'
+         self.InCDec3 = '"default"'
          self.CohExp = 0.5
 
 # Coherent Turbulence Scaling Parameters

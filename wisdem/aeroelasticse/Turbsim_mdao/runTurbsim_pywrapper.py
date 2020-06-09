@@ -296,8 +296,8 @@ def example_runTSFAST_Batch():
     fastBatch.case_list = case_list
     fastBatch.case_name_list = case_name_list
 
-    #fastBatch.run_serial()
-    fastBatch.run_multi(4)
+    fastBatch.run_serial()
+    #fastBatch.run_multi(4)
     ## at this point FAST has run, and the output file names have been added to the case list.
     print("ADDED FAST OUTPUT FILE NAMES")
     for i in range(len(fastBatch.case_list)):

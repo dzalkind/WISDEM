@@ -366,9 +366,9 @@ def example_runFAST_pywrapper_batch():
     # fastBatch.FAST_directory = 'C:/Users/egaertne/WT_Codes/models/openfast/glue-codes/fast/5MW_Land_DLL_WTurb'   # Path to fst directory files
     # fastBatch.FAST_runDirectory = 'temp/OpenFAST'
     # fastBatch.debug_level = 2
-    fastBatch.FAST_exe          = '/projects/windse/importance_sampling/WT_Codes/openfast/build/glue-codes/openfast/openfast'   # Path to executable
-    fastBatch.FAST_InputFile    = '5MW_Land_DLL_WTurb.fst'   # FAST input file (ext=.fst)
-    fastBatch.FAST_directory    = "/projects/windse/importance_sampling/WISDEM/xloads_tc/templates/openfast/5MW_Land_DLL_WTurb-Shutdown"   # Path to fst directory files
+    fastBatch.FAST_exe          = 'openfast'   # Path to executable
+    fastBatch.FAST_InputFile    = 'IEA-15-240-RWT-Monopile.fst'   # FAST input file (ext=.fst)
+    fastBatch.FAST_directory    = "/Users/dzalkind/Tools/IEA-15-240-RWT/OpenFAST/IEA-15-240-RWT-Monopile/"   # Path to fst directory files
     fastBatch.FAST_runDirectory = 'temp/OpenFAST'
     fastBatch.debug_level       = 2
     fastBatch.post              = return_timeseries
@@ -399,9 +399,9 @@ def example_runFAST_pywrapper_batch():
     fastBatch.case_list = case_list
     fastBatch.case_name_list = case_name_list
 
-    # fastBatch.run_serial()
-    # fastBatch.run_multi(2)
-    fastBatch.run_mpi()
+    fastBatch.run_serial()
+    #fastBatch.run_multi()
+   # fastBatch.run_multi()
 
 
 def example_runFAST_CaseGenIEC():
@@ -411,36 +411,44 @@ def example_runFAST_CaseGenIEC():
 
     # Turbine Data
     iec.init_cond = {} # can leave as {} if data not available
-    iec.init_cond[("ElastoDyn","RotSpeed")] = {'U':[3., 4., 5., 6., 7., 8., 9., 10., 11., 12., 13., 14., 15., 16., 17., 18., 19., 20., 21., 22., 23., 24., 25]}
-    iec.init_cond[("ElastoDyn","RotSpeed")]['val'] = [6.972, 7.183, 7.506, 7.942, 8.469, 9.156, 10.296, 11.431, 11.89, 12.1, 12.1, 12.1, 12.1, 12.1, 12.1, 12.1, 12.1, 12.1, 12.1, 12.1, 12.1, 12.1, 12.1]
+    # iec.init_cond[("ElastoDyn","RotSpeed")] = {'U':[3., 4., 5., 6., 7., 8., 9., 10., 11., 12., 13., 14., 15., 16., 17., 18., 19., 20., 21., 22., 23., 24., 25]}
+    # iec.init_cond[("ElastoDyn","RotSpeed")]['val'] = [6.972, 7.183, 7.506, 7.942, 8.469, 9.156, 10.296, 11.431, 11.89, 12.1, 12.1, 12.1, 12.1, 12.1, 12.1, 12.1, 12.1, 12.1, 12.1, 12.1, 12.1, 12.1, 12.1]
+    # iec.init_cond[("ElastoDyn","BlPitch1")] = {'U':[3., 4., 5., 6., 7., 8., 9., 10., 11., 12., 13., 14., 15., 16., 17., 18., 19., 20., 21., 22., 23., 24., 25]}
+    # iec.init_cond[("ElastoDyn","BlPitch1")]['val'] = [0., 0., 0., 0., 0., 0., 0., 0., 0., 3.823, 6.602, 8.668, 10.450, 12.055, 13.536, 14.920, 16.226, 17.473, 18.699, 19.941, 21.177, 22.347, 23.469]
+    
+    iec.init_cond[("ElastoDyn","RotSpeed")] = {'U':  [3.,   4.,   5.,   6.,   7.,   8.,   9.,  10., 11., 12., 13., 14., 15., 16., 17., 18., 19., 20., 21., 22., 23., 24., 25]}
+    iec.init_cond[("ElastoDyn","RotSpeed")]['val'] = [4.99, 4.99, 4.99, 4.99, 4.99, 5.73, 6.44,7.15,7.55,7.55,7.55,7.55,7.55,7.55,7.55,7.55,7.55,7.55,7.55,7.55,7.55,7.55,7.55]
     iec.init_cond[("ElastoDyn","BlPitch1")] = {'U':[3., 4., 5., 6., 7., 8., 9., 10., 11., 12., 13., 14., 15., 16., 17., 18., 19., 20., 21., 22., 23., 24., 25]}
-    iec.init_cond[("ElastoDyn","BlPitch1")]['val'] = [0., 0., 0., 0., 0., 0., 0., 0., 0., 3.823, 6.602, 8.668, 10.450, 12.055, 13.536, 14.920, 16.226, 17.473, 18.699, 19.941, 21.177, 22.347, 23.469]
+    iec.init_cond[("ElastoDyn","BlPitch1")]['val'] = [4., 3.7, 2.72, 1.19, 0., 0., 0., 3., 3., 3.823, 6.602, 8.668, 10.450, 12.055, 13.536, 14.920, 16.226, 17.473, 18.699, 19.941, 21.177, 22.347, 23.469]
+    
+    
     iec.init_cond[("ElastoDyn","BlPitch2")] = iec.init_cond[("ElastoDyn","BlPitch1")]
     iec.init_cond[("ElastoDyn","BlPitch3")] = iec.init_cond[("ElastoDyn","BlPitch1")]
 
     iec.Turbine_Class = 'I' # I, II, III, IV
     iec.Turbulence_Class = 'A'
-    iec.D = 126.
-    iec.z_hub = 90.
+    iec.D = 240.            #TODO: pull this info from fast file...do we know fast file?
+    iec.z_hub = 150
 
     # DLC inputs
     iec.dlc_inputs = {}
-    iec.dlc_inputs['DLC']   = [1.1, 1.5]
-    iec.dlc_inputs['U']     = [[8, 9, 10], [12]]
-    iec.dlc_inputs['Seeds'] = [[5, 6, 7], []]
-    iec.dlc_inputs['Yaw']   = [[], []]
+    iec.dlc_inputs['DLC']   = [1.1,1.3,1.4,1.5,5.1]#,6.1,6.3]
+    iec.dlc_inputs['U']     = [[4,6,8,10,12,14,16,18,20,22,24],[4,6,8,10,12,14,16,18,20,22,24],[8.88,12.88], \
+                                    [4,6,8,10,12,14,16,18,20,22,24],[8,12,24]]#,[],[]]  #[[10, 12, 14], [12]]
+    iec.dlc_inputs['Seeds'] = [[1,2,3,4,5,6],[1,2,3,4,5,6],[],[],[1,2,3,4,5,6]]#,[],[]] #[[5, 6, 7], []]
+    iec.dlc_inputs['Yaw']   = [[],[],[],[],[]]#,[],[]]  #[[], []]
 
     iec.transient_dir_change        = 'both'  # '+','-','both': sign for transient events in EDC, EWS
     iec.transient_shear_orientation = 'both'  # 'v','h','both': vertical or horizontal shear for EWS
 
     # Naming, file management, etc
-    iec.wind_dir = 'temp/wind'
-    iec.case_name_base = 'testing'
-    iec.Turbsim_exe = 'C:/Users/egaertne/WT_Codes/Turbsim_v2.00.07/bin/TurbSim_x64.exe'
+    iec.wind_dir = 'UMaine/wind'
+    iec.case_name_base = 'UM_DLC0'
+    iec.Turbsim_exe = '/Users/dzalkind/Tools/openfast/build/modules/turbsim/turbsim'
     iec.debug_level = 2
     iec.parallel_windfile_gen = True
-    iec.cores = 4
-    iec.run_dir = 'temp/OpenFAST'
+    iec.cores = 8
+    iec.run_dir = 'UMaine/DLCs'
 
     # Run case generator / wind file writing
     case_inputs = {}
@@ -449,17 +457,18 @@ def example_runFAST_CaseGenIEC():
 
     # Run FAST cases
     fastBatch = runFAST_pywrapper_batch(FAST_ver='OpenFAST')
-    fastBatch.FAST_exe = 'C:/Users/egaertne/WT_Codes/openfast/build/glue-codes/fast/openfast.exe'   # Path to executable
-    fastBatch.FAST_InputFile = '5MW_Land_DLL_WTurb.fst'   # FAST input file (ext=.fst)
-    fastBatch.FAST_directory = 'C:/Users/egaertne/WT_Codes/models/openfast/glue-codes/fast/5MW_Land_DLL_WTurb'   # Path to fst directory files
+    fastBatch.FAST_exe = 'openfast'   # Path to executable
+    fastBatch.FAST_InputFile = 'IEA-15-240-RWT-UMaineSemi.fst'   # FAST input file (ext=.fst)
+    fastBatch.FAST_directory = '/Users/dzalkind/Tools/IEA-15-240-RWT/OpenFAST/IEA-15-240-RWT-UMaineSemi'   # Path to fst directory files
     fastBatch.FAST_runDirectory = iec.run_dir
 
     fastBatch.case_list = case_list
     fastBatch.case_name_list = case_name_list
     fastBatch.debug_level = 2
+    fastBatch.dev_branch = True
 
-    # fastBatch.run_serial()
-    fastBatch.run_multi(4)
+    #fastBatch.run_serial()
+    fastBatch.run_multi(8)
 
     
 def example_runFAST_pywrapper():
@@ -498,13 +507,20 @@ def example_runFAST_pywrapper():
     #     fast.write_yaml = False
     #     fast.FAST_yamlfile_out = 'temp/OpenFAST/test.yaml'
     elif FAST_ver.lower() == 'openfast':
-        fast.FAST_exe = 'C:/Users/egaertne/WT_Codes/openfast-dev/build/glue-codes/openfast/openfast.exe'   # Path to executable
-        # fast.FAST_InputFile = '5MW_Land_DLL_WTurb.fst'   # FAST input file (ext=.fst)
-        # fast.FAST_directory = 'C:/Users/egaertne/WT_Codes/models/openfast-dev/r-test/glue-codes/openfast/5MW_Land_DLL_WTurb'   # Path to fst directory files
-        fast.FAST_InputFile = '5MW_OC3Spar_DLL_WTurb_WavesIrr.fst'   # FAST input file (ext=.fst)
-        fast.FAST_directory = 'C:/Users/egaertne/WT_Codes/models/openfast-dev/r-test/glue-codes/openfast/5MW_OC3Spar_DLL_WTurb_WavesIrr'   # Path to fst directory files
+        # fast.FAST_exe = 'C:/Users/egaertne/WT_Codes/openfast-dev/build/glue-codes/openfast/openfast.exe'   # Path to executable
+        # # fast.FAST_InputFile = '5MW_Land_DLL_WTurb.fst'   # FAST input file (ext=.fst)
+        # # fast.FAST_directory = 'C:/Users/egaertne/WT_Codes/models/openfast-dev/r-test/glue-codes/openfast/5MW_Land_DLL_WTurb'   # Path to fst directory files
+        # fast.FAST_InputFile = '5MW_OC3Spar_DLL_WTurb_WavesIrr.fst'   # FAST input file (ext=.fst)
+        # fast.FAST_directory = 'C:/Users/egaertne/WT_Codes/models/openfast-dev/r-test/glue-codes/openfast/5MW_OC3Spar_DLL_WTurb_WavesIrr'   # Path to fst directory files
+        # fast.FAST_runDirectory = 'temp/OpenFAST'
+
+        fast.FAST_exe          = 'openfast'   # Path to executable
+        fast.FAST_InputFile    = 'IEA-15-240-RWT-UMaineSemi.fst'   # FAST input file (ext=.fst)
+        fast.FAST_directory    = "/Users/dzalkind/Tools/IEA-15-240-RWT/OpenFAST/IEA-15-240-RWT-UMaineSemi/"   # Path to fst directory files
         fast.FAST_runDirectory = 'temp/OpenFAST'
-        fast.FAST_namingOut = 'test_run_spar'
+
+        fast.FAST_namingOut = 'test_run_float'
+
 
         fast.read_yaml = False
         fast.FAST_yamlfile_in = 'temp/OpenFAST/test.yaml'
@@ -517,6 +533,6 @@ def example_runFAST_pywrapper():
 
 if __name__=="__main__":
 
-    # example_runFAST_pywrapper()
-    example_runFAST_pywrapper_batch()
-    # example_runFAST_CaseGenIEC()
+    #example_runFAST_pywrapper()
+    #example_runFAST_pywrapper_batch()
+    example_runFAST_CaseGenIEC()
