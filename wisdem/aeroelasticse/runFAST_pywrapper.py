@@ -533,6 +533,6 @@ def example_runFAST_pywrapper():
 
 if __name__=="__main__":
 
-    #example_runFAST_pywrapper()
+    example_runFAST_pywrapper()
     #example_runFAST_pywrapper_batch()
-    example_runFAST_CaseGenIEC()
+    # example_runFAST_CaseGenIEC()

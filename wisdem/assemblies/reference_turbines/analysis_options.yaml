@@ -14,17 +14,17 @@ rotorse:
     n_span: 30        # Number of spanwise stations used to define the blade properties
 
 openfast:
-    run_openfast: False         # Flag to run aeroelasticse, the wrapper of OpenFAST
-    Analysis_Level: 0           # Flag to set the call to OpenFAST. 0 - no call, 1 - generate OpenFAST model, 2 - generate and run OpenFAST model
+    run_openfast: True         # Flag to run aeroelasticse, the wrapper of OpenFAST
+    Analysis_Level: 2           # Flag to set the call to OpenFAST. 0 - no call, 1 - generate OpenFAST model, 2 - generate and run OpenFAST model
     FAST_ver: OpenFAST          # Version of OpenFAST, do not change
     dev_branch: True            # Git branch of OpenFAST, do not change
-    FAST_exe: openfast/build/glue-codes/openfast/openfast    # Path to OpenFAST executable
-    FAST_directory: "/Model_xyz/"  # Path to folder with the OpenFAST input files
-    FAST_InputFile: model.fst             # Name of the main OpenFAST input file (.fst)
-    path2dll: Controller/libdiscon.so     # Path to the the compiled ROSCO controller
-    Turbsim_exe: /install/bin/turbsim_dev   # Path to TurbSim executable
-    FAST_namingOut: WISDEM_BAR2011n         # Name of the OpenFAST output files
-    FAST_runDirectory: temp_bar             # Path to folder with the OpenFAST output files
+    FAST_exe: /Users/dzalkind/Tools/openfast/install/bin/openfast    # Path to OpenFAST executable
+    FAST_directory: "/Users/dzalkind/Tools/ROSCO_toolbox/Test_Cases/5MW_Land_DLL_WTurb/"  # Path to folder with the OpenFAST input files
+    FAST_InputFile: 5MW_Land_DLL_WTurb.fst             # Name of the main OpenFAST input file (.fst)
+    path2dll: /Users/dzalkind/Tools/ROSCO_toolbox/ROSCO/build/libdiscon.dylib     # Path to the the compiled ROSCO controller
+    Turbsim_exe: /Users/dzalkind/Tools/openfast/install/bin/turbsim   # Path to TurbSim executable
+    FAST_namingOut: NREL_5MW_test         # Name of the OpenFAST output files
+    FAST_runDirectory: NREL_5MW_anal             # Path to folder with the OpenFAST output files
     n_simulations: 4  # Number of OpenFAST simulations to run per evaluation of the objective function
     debug_level: 2    # Flag to set the debug level, do not change
     update_hub_nacelle: True
