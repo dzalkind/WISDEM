@@ -766,6 +766,7 @@ HydroDyn['WAMITULEN']        = 0.
 HydroDyn['PtfmVol0']         = 0.
 HydroDyn['PtfmCOBxt']        = 0.
 HydroDyn['PtfmCOByt']        = 0.
+HydroDyn['ExctnMod']         = 0
 HydroDyn['RdtnMod']          = 0
 HydroDyn['RdtnTMax']         = 0.
 HydroDyn['RdtnDT']           = 0.
