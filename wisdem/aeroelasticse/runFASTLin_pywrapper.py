@@ -323,7 +323,7 @@ class LinearFAST(runFAST_pywrapper_batch):
         Run batch of steady state cases for initial conditions, in serial or in parallel
         """
 
-        self.FAST_runDirectory = os.path.join(self.FAST_runDirectory,'steady')
+        self.FAST_runDirectory = self.FAST_steadyDirectory
 
         case_inputs = {}
         case_inputs[("Fst","TMax")] = {'vals':[self.TMax], 'group':0}
@@ -340,7 +340,7 @@ class LinearFAST(runFAST_pywrapper_batch):
         # case_inputs[("ElastoDyn","BlPitch3")] = case_inputs[("ElastoDyn","BlPitch1")]
         
         from CaseGen_General import CaseGen_General
-        case_list, case_name_list = CaseGen_General(case_inputs, dir_matrix=self.FAST_runDirectory, namebase='testing')
+        case_list, case_name_list = CaseGen_General(case_inputs, dir_matrix=self.FAST_steadyDirectory, namebase='steady')
 
         self.case_list = case_list
         self.case_name_list = case_name_list
@@ -361,15 +361,15 @@ class LinearFAST(runFAST_pywrapper_batch):
         PLOT = 0
 
         # Define input files paths
-        output_dir      = os.path.join(self.FAST_runDirectory,'steady')
+        output_dir      = self.FAST_steadyDirectory
 
         # Find all outfiles
         outfiles = []
         for file in os.listdir(output_dir):
             if file.endswith('.outb'):
                 outfiles.append(os.path.join(output_dir,file))
-            elif file.endswith('.out') and not file.endswith('.MD.out'):  
-                outfiles.append(os.path.join(output_dir,file))
+            # elif file.endswith('.out') and not file.endswith('.MD.out'):  
+            #     outfiles.append(os.path.join(output_dir,file))
 
 
         # Initialize processing classes
@@ -463,8 +463,8 @@ class LinearFAST(runFAST_pywrapper_batch):
         Example of running a batch of cases, in serial or in parallel
         """
 
-        ss_opFile = os.path.join(self.FAST_runDirectory,'steady','ss_ops.yaml')
-        self.FAST_runDirectory = os.path.join(self.FAST_runDirectory,'linear')
+        ss_opFile = os.path.join(self.FAST_steadyDirectory,'ss_ops.yaml')
+        self.FAST_runDirectory = self.FAST_linearDirectory
 
         ## Generate case list using General Case Generator
         ## Specify several variables that change independently or collectly
@@ -525,6 +525,9 @@ class LinearFAST(runFAST_pywrapper_batch):
             if ic != 'Wind1VelX':
                 case_inputs[("ElastoDyn",ic)] = {'vals': np.interp(case_inputs[("InflowWind","HWindSpeed")]['vals'],uu,ss_ops[ic]).tolist(), 'group': 1}
 
+        case_inputs[('ElastoDyn','BlPitch2')] = case_inputs[('ElastoDyn','BlPitch1')]
+        case_inputs[('ElastoDyn','BlPitch3')] = case_inputs[('ElastoDyn','BlPitch1')]
+
         # Lin Times
         rotPer = 60. / np.array(case_inputs['ElastoDyn','RotSpeed']['vals'])
         linTimes = np.linspace(self.TMax-100,self.TMax-100 + rotPer,num = self.NLinTimes, endpoint=False)
@@ -538,7 +541,7 @@ class LinearFAST(runFAST_pywrapper_batch):
 
         # Generate Cases
         from CaseGen_General import CaseGen_General
-        case_list, case_name_list = CaseGen_General(case_inputs, dir_matrix=self.FAST_runDirectory, namebase='testing')
+        case_list, case_name_list = CaseGen_General(case_inputs, dir_matrix=self.FAST_linearDirectory, namebase='lin')
 
         self.case_list = case_list
         self.case_name_list = case_name_list
@@ -555,25 +558,26 @@ if __name__=="__main__":
     linear = LinearFAST(FAST_ver='OpenFAST', dev_branch=True);
 
     # fast info
-    linear.FAST_exe          = '/Users/dzalkind/Tools/openfast/install/bin/openfast'   # Path to executable
-    linear.FAST_InputFile    = 'IEA-15-240-RWT-UMaineSemi.fst'   # FAST input file (ext=.fst)
-    linear.FAST_directory    = '/Users/dzalkind/Tools/IEA-15-240-RWT/OpenFAST/IEA-15-240-RWT-UMaineSemi'   # Path to fst directory files
-    linear.FAST_runDirectory = '/Users/dzalkind/Tools/SaveData/UMaine/LinearTwr'
-    linear.debug_level       = 2
-    linear.dev_branch        = True
-    linear.write_yaml        = True
+    linear.FAST_exe                 = '/Users/dzalkind/Tools/openfast/install/bin/openfast'   # Path to executable
+    linear.FAST_InputFile           = 'IEA-15-240-RWT-UMaineSemi.fst'   # FAST input file (ext=.fst)
+    linear.FAST_directory           = '/Users/dzalkind/Tools/IEA-15-240-RWT/OpenFAST/IEA-15-240-RWT-UMaineSemi'   # Path to fst directory files
+    linear.FAST_steadyDirectory     = '/Users/dzalkind/Tools/SaveData/UMaine/Steady'
+    linear.FAST_linearDirectory     = '/Users/dzalkind/Tools/SaveData/UMaine/LinearPitch'
+    linear.debug_level              = 2
+    linear.dev_branch               = True
+    linear.write_yaml               = True
 
     # linearization setup
     linear.WindSpeeds       = [8.,10.,12.,14.,24.]
-    linear.DOFs             = ['GenDOF','TwrFADOF1']
-    linear.TMax             = 1000.;
-    linear.NLinTimes        = 36;
+    linear.DOFs             = ['GenDOF','PtfmPDOF']
+    linear.TMax             = 1000.
+    linear.NLinTimes        = 36
 
     #if true, there will be a lot of hydronamic states, equal to num. states in ss_exct and ss_radiation models
-    linear.HydroStates      = False  
+    linear.HydroStates      = True  
 
     # simulation setup
-    linear.parallel         = True
+    linear.parallel         = False
 
 
     # run steady state sims
