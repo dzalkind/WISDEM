@@ -51,6 +51,7 @@ class CaseGen_IEC():
         self.PC_MaxRat                   = 5.      # (deg), maximum blade pitch rate, used for emergency stop, DLC 5.1
         self.TMax                        = 0.
         self.TStart                      = 30.
+        self.uniqueSeeds                 = False
 
         self.debug_level                 = 2
         self.parallel_windfile_gen       = False
@@ -74,7 +75,7 @@ class CaseGen_IEC():
                 IEC_WindType = 'NTM'
                 alpha = 0.2
                 iecwind = pyIECWind_turb()
-                TMax = 630.
+                TMax = 700.
 
             elif dlc in [1.3, 6.1, 6.3]:
                 if self.Turbine_Class == 'I':
@@ -88,7 +89,7 @@ class CaseGen_IEC():
                 IEC_WindType = '%uETM'%x
                 alpha = 0.11
                 iecwind = pyIECWind_turb()
-                TMax = 630.
+                TMax = 700.
 
             elif dlc == 1.4:
                 IEC_WindType = 'ECD'
@@ -157,7 +158,7 @@ class CaseGen_IEC():
                 case_inputs_i[("ServoDyn","BlPitchF1")]  = {'vals':[0.], 'group':0}
                 case_inputs_i[("ServoDyn","BlPitchF2")]  = {'vals':[0.], 'group':0}
                 case_inputs_i[("ServoDyn","BlPitchF3")]  = {'vals':[0.], 'group':0}
-                case_inputs_i[("ServoDyn","GenTiStp")]   = {'vals':["False"], 'group':0}
+                case_inputs_i[("ServoDyn","GenTiStp")]   = {'vals':["True"], 'group':0}
                 case_inputs_i[("ServoDyn","TimGenOf")]   = {'vals':[9999.9], 'group':0}
 
             if dlc == 6.1:
@@ -210,6 +211,11 @@ class CaseGen_IEC():
                         row_out[g] = change_vals[g][val]
                 matrix_out.append(row_out)
             matrix_out = np.asarray(matrix_out)
+
+            # change seed manually to not mess up indexing above, 600
+            if self.uniqueSeeds and dlc in [1.1, 1.2, 5.1, 1.3, 6.1, 6.3]:
+                for idx, row in enumerate(matrix_out):
+                    matrix_out[idx][1] = idx + 600
             
             if self.parallel_windfile_gen and not self.mpi_run:
                 # Parallel wind file generation (threaded with multiprocessing)
