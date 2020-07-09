@@ -470,6 +470,73 @@ def example_runFAST_CaseGenIEC():
     #fastBatch.run_serial()
     fastBatch.run_multi(8)
 
+def runFAST_TestROSCO():
+
+    from CaseGen_IEC import CaseGen_IEC
+    iec = CaseGen_IEC()
+
+    # Turbine Data
+    iec.init_cond = {} # can leave as {} if data not available
+    # iec.init_cond[("ElastoDyn","RotSpeed")] = {'U':[3., 4., 5., 6., 7., 8., 9., 10., 11., 12., 13., 14., 15., 16., 17., 18., 19., 20., 21., 22., 23., 24., 25]}
+    # iec.init_cond[("ElastoDyn","RotSpeed")]['val'] = [6.972, 7.183, 7.506, 7.942, 8.469, 9.156, 10.296, 11.431, 11.89, 12.1, 12.1, 12.1, 12.1, 12.1, 12.1, 12.1, 12.1, 12.1, 12.1, 12.1, 12.1, 12.1, 12.1]
+    # iec.init_cond[("ElastoDyn","BlPitch1")] = {'U':[3., 4., 5., 6., 7., 8., 9., 10., 11., 12., 13., 14., 15., 16., 17., 18., 19., 20., 21., 22., 23., 24., 25]}
+    # iec.init_cond[("ElastoDyn","BlPitch1")]['val'] = [0., 0., 0., 0., 0., 0., 0., 0., 0., 3.823, 6.602, 8.668, 10.450, 12.055, 13.536, 14.920, 16.226, 17.473, 18.699, 19.941, 21.177, 22.347, 23.469]
+    
+    iec.init_cond[("ElastoDyn","RotSpeed")] = {'U':  [3.,   4.,   5.,   6.,   7.,   8.,   9.,  10., 11., 12., 13., 14., 15., 16., 17., 18., 19., 20., 21., 22., 23., 24., 25]}
+    iec.init_cond[("ElastoDyn","RotSpeed")]['val'] = [4.99, 4.99, 4.99, 4.99, 4.99, 5.73, 6.44,7.15,7.55,7.55,7.55,7.55,7.55,7.55,7.55,7.55,7.55,7.55,7.55,7.55,7.55,7.55,7.55]
+    iec.init_cond[("ElastoDyn","BlPitch1")] = {'U':[3., 4., 5., 6., 7., 8., 9., 10., 11., 12., 13., 14., 15., 16., 17., 18., 19., 20., 21., 22., 23., 24., 25]}
+    iec.init_cond[("ElastoDyn","BlPitch1")]['val'] = [4., 3.7, 2.72, 1.19, 0., 0., 0., 3., 3., 3.823, 6.602, 8.668, 10.450, 12.055, 13.536, 14.920, 16.226, 17.473, 18.699, 19.941, 21.177, 22.347, 23.469]
+    
+    
+    iec.init_cond[("ElastoDyn","BlPitch2")] = iec.init_cond[("ElastoDyn","BlPitch1")]
+    iec.init_cond[("ElastoDyn","BlPitch3")] = iec.init_cond[("ElastoDyn","BlPitch1")]
+
+    iec.Turbine_Class = 'I' # I, II, III, IV
+    iec.Turbulence_Class = 'A'
+    iec.D = 240.            #TODO: pull this info from fast file...do we know fast file?
+    iec.z_hub = 150
+
+    # DLC inputs
+    iec.dlc_inputs = {}
+    iec.dlc_inputs['DLC']   = [1.3,1.4]#,6.1,6.3]
+    iec.dlc_inputs['U']     = [[4,6,8,10,12,14,16,18,20,22,24],[8.88,12.88]]
+    # iec.dlc_inputs['Seeds'] = [[[1],[2],[3],[4],[5],[6],[7],[8],[9],[10],[11]],[]]#,[],[]] #[[5, 6, 7], []]
+    iec.dlc_inputs['Seeds'] = [[6,7],[]]#,[],[]] #[[5, 6, 7], []]
+    iec.dlc_inputs['Yaw']   = [[],[]]#,[],[]]  #[[], []]
+    iec.uniqueSeeds         = True
+
+    iec.transient_dir_change        = 'both'  # '+','-','both': sign for transient events in EDC, EWS
+    iec.transient_shear_orientation = 'both'  # 'v','h','both': vertical or horizontal shear for EWS
+
+    # Naming, file management, etc
+    iec.wind_dir = '/Users/dzalkind/Tools/SaveData/ROSCO/wind_15MW'
+    iec.case_name_base = 'RO_DLC'
+    iec.Turbsim_exe = '/Users/dzalkind/Tools/openfast/build/modules/turbsim/turbsim'
+    iec.debug_level = 2
+    iec.parallel_windfile_gen = True
+    iec.cores = 8
+    iec.run_dir = '/Users/dzalkind/Tools/SaveData/ROSCO/Baseline'
+
+    # Run case generator / wind file writing
+    case_inputs = {}
+    case_inputs[('Fst','OutFileFmt')] = {'vals':[1], 'group':0}
+    case_list, case_name_list = iec.execute(case_inputs=case_inputs)
+
+    # Run FAST cases
+    fastBatch = runFAST_pywrapper_batch(FAST_ver='OpenFAST')
+    fastBatch.FAST_exe = '/Users/dzalkind/Tools/openfast/install/bin/openfast'   # Path to executable
+    fastBatch.FAST_InputFile = 'IEA-15-240-RWT-UMaineSemi.fst'   # FAST input file (ext=.fst)
+    fastBatch.FAST_directory = '/Users/dzalkind/Tools/IEA-15-240-RWT/OpenFAST/IEA-15-240-RWT-UMaineSemi'   # Path to fst directory files
+    fastBatch.FAST_runDirectory = iec.run_dir
+
+    fastBatch.case_list = case_list
+    fastBatch.case_name_list = case_name_list
+    fastBatch.debug_level = 2
+    fastBatch.dev_branch = True
+
+    # fastBatch.run_serial()
+    fastBatch.run_multi(8)
+
 
 def NASA_runFAST_CaseGenIEC():
 
@@ -613,4 +680,5 @@ if __name__=="__main__":
     # example_runFAST_pywrapper()
     #example_runFAST_pywrapper_batch()
     #example_runFAST_CaseGenIEC()
-    NASA_runFAST_CaseGenIEC()
+    # NASA_runFAST_CaseGenIEC()
+    runFAST_TestROSCO()

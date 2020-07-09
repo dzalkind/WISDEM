@@ -689,7 +689,70 @@ def RotorSE_DAC_rated(fst_vt, runDir, namebase, TMax, turbine_class, turbulence_
     return case_list, case_name_list, channels
 
 
+def ROSCO_Test(fst_vt, runDir, namebase, TMax, turbine_class, turbulence_class, Turbsim_exe='', debug_level=0, cores=0, mpi_run=False, mpi_comm_map_down=[]):
 
+    
+    # Overwrite for testing
+    # if TMax < T:
+    #     T      = TMax
+    #     TStart = 0.
+
+
+    iec = CaseGen_IEC()
+
+    # I'd like to start them all at the same place.  The controller should be able to handle startup transients.
+    iec.init_cond[("ElastoDyn","RotSpeed")] = {'U':  [2,30]}
+    iec.init_cond[("ElastoDyn","RotSpeed")]['val'] = np.ones([2]) * fst_vt['ElastoDyn']['RotSpeed'] * fst_vt['ElastoDyn']['GBRatio'] /2
+    iec.init_cond[("ElastoDyn","BlPitch1")] = {'U':  [2,30]}
+    iec.init_cond[("ElastoDyn","BlPitch1")]['val'] = np.ones([2]) * 15
+    iec.init_cond[("ElastoDyn","BlPitch2")] = iec.init_cond[("ElastoDyn","BlPitch1")]
+    iec.init_cond[("ElastoDyn","BlPitch3")] = iec.init_cond[("ElastoDyn","BlPitch1")]
+    iec.Turbine_Class = turbine_class
+    iec.Turbulence_Class = turbulence_class
+    iec.D = fst_vt['ElastoDyn']['TipRad']*2.
+    iec.z_hub = fst_vt['InflowWind']['RefHt']
+
+    iec.dlc_inputs = {}
+    iec.dlc_inputs['DLC']   = [1.3,1.4]#,6.1,6.3]
+    iec.dlc_inputs['U']     = [[4,6,8,10,12,14,16,18,20,22,24],[8.88,12.88]]
+    # iec.dlc_inputs['Seeds'] = [[1]]
+    iec.dlc_inputs['Seeds'] = [[1],[]] # nothing special about these seeds, randomly generated (???)
+    iec.dlc_inputs['Yaw']   = [[], []]
+    iec.transient_dir_change        = '-'  # '+','-','both': sign for transient events in EDC, EWS
+    iec.transient_shear_orientation = 'v'  # 'v','h','both': vertical or horizontal shear for EWS
+
+    iec.wind_dir        = os.path.join(runDir,'wind')
+    iec.case_name_base  = namebase
+    iec.Turbsim_exe     = Turbsim_exe
+    iec.debug_level     = debug_level
+    iec.cores           = cores
+    iec.run_dir         = runDir
+    iec.overwrite       = False
+    # iec.overwrite       = False
+    if cores > 1:
+        iec.parallel_windfile_gen = True
+    else:
+        iec.parallel_windfile_gen = False
+
+    # mpi_run = False
+    if mpi_run:
+        iec.mpi_run           = mpi_run
+        iec.comm_map_down = mpi_comm_map_down
+
+    case_inputs = {}
+    case_inputs[("Fst","TMax")]              = {'vals':[TMax], 'group':0}
+    case_inputs[("Fst","OutFileFmt")]        = {'vals':[2], 'group':0}
+
+    case_inputs[('ServoDyn','GenTiStr')]     = {'vals': ['False'], 'group': 0}
+    case_inputs[('ServoDyn','GenTiStp')]     = {'vals': ['True'], 'group': 0}
+    case_inputs[('ServoDyn','SpdGenOn')]     = {'vals': [0.], 'group': 0}
+    
+    case_list, case_name_list = iec.execute(case_inputs=case_inputs)
+
+    channels  = ["TipDxc1", "TipDyc1", "TipDzc1", "TipDxc2", "TipDyc2", "TipDzc2", "TipDxc3", "TipDyc3", "TipDzc3"]
+    channels += ["RootMxc1", "RootMyc1", "RootMzc1", "RootMxc2", "RootMyc2", "RootMzc2", "RootMxc3", "RootMyc3", "RootMzc3"]
+
+    return case_list, case_name_list, channels
 
 
 if __name__ == "__main__":
