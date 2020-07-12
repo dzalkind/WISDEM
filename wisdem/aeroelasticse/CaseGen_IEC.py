@@ -50,7 +50,7 @@ class CaseGen_IEC():
         self.transient_shear_orientation = 'both'  # 'v','h','both': vertical or horizontal shear for EWS
         self.PC_MaxRat                   = 5.      # (deg), maximum blade pitch rate, used for emergency stop, DLC 5.1
         self.TMax                        = 0.
-        self.TStart                      = 30.
+        self.TStart                      = 150.
         self.uniqueSeeds                 = False
 
         self.debug_level                 = 2
@@ -95,13 +95,13 @@ class CaseGen_IEC():
                 IEC_WindType = 'ECD'
                 alpha = 0.2
                 iecwind = pyIECWind_extreme()
-                TMax = 90.
+                TMax = 300.
 
             elif dlc == 1.5:
                 IEC_WindType = 'EWS'
                 alpha = 0.2
                 iecwind = pyIECWind_extreme()
-                TMax = 90.
+                TMax = 300.
 
             # Windfile generation setup
             if self.TMax == 0.:
