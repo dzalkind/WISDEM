@@ -1733,7 +1733,12 @@ class InputReader_OpenFAST(InputReader_Common):
         #JOINT OUTPUT LIST
         f.readline()
         self.fst_vt['HydroDyn']['NJOutputs'] = int_read(f.readline().split()[0])
-        self.fst_vt['HydroDyn']['JOutLst']   = [int(idx.strip()) for idx in f.readline().split('JOutLst')[0].split(',')]
+        # try:
+            # fpos = f.tell()
+        self.fst_vt['HydroDyn']['JOutLst']   = [int(idx.strip()) for idx in f.readline().split('JOutLst')[0].split(' ') if idx]
+        # except:
+            # f.seek(fpos)
+            # self.fst_vt['HydroDyn']['JOutLst']   = [int(idx.strip()) for idx in f.readline().split('JOutLst')[0].split(' ') if not idx]
 
         #OUTPUT
         f.readline()
