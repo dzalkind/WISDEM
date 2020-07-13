@@ -479,7 +479,7 @@ class LinearFAST(runFAST_pywrapper_batch):
         
         # InflowWind
         case_inputs[("InflowWind","WindType")] = {'vals':[1], 'group':0}
-        case_inputs[("InflowWind","HWindSpeed")] = {'vals':self.WindSpeeds, 'group':1}
+        case_inputs[("InflowWind","HWindSpeed")] = {'vals':[self.WindSpeeds], 'group':1}
 
         # AeroDyn Inputs
         case_inputs[("AeroDyn15","AFAeroMod")] = {'vals':[1], 'group':0}
@@ -588,7 +588,7 @@ if __name__=="__main__":
     # linear.runFAST_steady()
 
     # process results 
-    linear.postFAST_steady()
+    # linear.postFAST_steady()
 
     # run linearizations
     linear.runFAST_linear()
