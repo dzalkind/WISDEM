@@ -532,8 +532,12 @@ class LinearFAST(runFAST_pywrapper_batch):
         rotPer = 60. / np.array(case_inputs['ElastoDyn','RotSpeed']['vals'])
         linTimes = np.linspace(self.TMax-100,self.TMax-100 + rotPer,num = self.NLinTimes, endpoint=False)
         linTimeStrings = []
-        for iCase in range(0,linTimes.shape[1]):
-            linTimeStrings.append(np.array_str(linTimes[:,iCase],max_line_width=9000,precision=3)[1:-1])
+
+        if linTimes.ndim == 1:
+            linTimeStrings = np.array_str(linTimes,max_line_width=9000,precision=3)[1:-1]
+        else:
+            for iCase in range(0,linTimes.shape[1]):
+                linTimeStrings.append(np.array_str(linTimes[:,iCase],max_line_width=9000,precision=3)[1:-1])
         
         case_inputs[("Fst","NLinTimes")] = {'vals':[self.NLinTimes], 'group':0}
         case_inputs[("Fst","LinTimes")] = {'vals':linTimeStrings, 'group':1}
@@ -568,7 +572,7 @@ if __name__=="__main__":
     linear.write_yaml               = True
 
     # linearization setup
-    linear.WindSpeeds       = [8.,10.,12.,14.,24.]
+    linear.WindSpeeds       = 14 #[8.,10.,12.,14.,24.]
     linear.DOFs             = ['GenDOF','PtfmPDOF']
     linear.TMax             = 1000.
     linear.NLinTimes        = 36
@@ -581,7 +585,7 @@ if __name__=="__main__":
 
 
     # run steady state sims
-    linear.runFAST_steady()
+    # linear.runFAST_steady()
 
     # process results 
     linear.postFAST_steady()
