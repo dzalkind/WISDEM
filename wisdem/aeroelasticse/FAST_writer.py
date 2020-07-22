@@ -407,6 +407,12 @@ class InputWriter_OpenFAST(InputWriter_Common):
         f.write('{:<22} {:<11} {:}'.format('"'+self.fst_vt['Fst']['OutFmt']+'"', 'OutFmt', '- Format used for text tabular output, excluding the time channel.  Resulting field should be 10 characters. (quoted string)\n'))
         f.write('---------------------- LINEARIZATION -------------------------------------------\n')
         f.write('{!s:<22} {:<11} {:}'.format(self.fst_vt['Fst']['Linearize'], 'Linearize', '- Linearization analysis (flag)\n'))
+        f.write('{!s:<22} {:<11} {:}'.format(self.fst_vt['Fst']['CalcSteady'], 'CalcSteady', '- Calculate a steady-state periodic operating point before linearization? [unused if Linearize=False] (flag)\n'))
+        f.write('{:<22} {:<11} {:}'.format(self.fst_vt['Fst']['TrimCase'], 'TrimCase', '- Controller parameter to be trimmed {1:yaw; 2:torque; 3:pitch} [used only if CalcSteady=True] (-)\n'))
+        f.write('{:<22} {:<11} {:}'.format(self.fst_vt['Fst']['TrimTol'], 'TrimTol', '- Tolerance for the rotational speed convergence [used only if CalcSteady=True] (-)\n'))
+        f.write('{:<22} {:<11} {:}'.format(self.fst_vt['Fst']['TrimGain'], 'TrimGain', '- Proportional gain for the rotational speed error (>0) [used only if CalcSteady=True] (rad/(rad/s) for yaw or pitch; Nm/(rad/s) for torque)\n'))
+        f.write('{:<22} {:<11} {:}'.format(self.fst_vt['Fst']['Twr_Kdmp'], 'Twr_Kdmp', '- Damping factor for the tower [used only if CalcSteady=True] (N/(m/s))\n'))
+        f.write('{:<22} {:<11} {:}'.format(self.fst_vt['Fst']['Bld_Kdmp'], 'Bld_Kdmp', '- Damping factor for the blades [used only if CalcSteady=True] (N/(m/s))\n'))
         f.write('{:<22} {:<11} {:}'.format(self.fst_vt['Fst']['NLinTimes'], 'NLinTimes', '- Number of times to linearize (-) [>=1] [unused if Linearize=False]\n'))
         try:
             f.write('{:<22} {:<11} {:}'.format(self.fst_vt['Fst']['LinTimes'], 'LinTimes', '- List of times at which to linearize (s) [1 to NLinTimes] [unused if Linearize=False]\n'))

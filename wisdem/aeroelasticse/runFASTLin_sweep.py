@@ -334,8 +334,10 @@ class LinearFAST(runFAST_pywrapper_batch):
         case_inputs[("InflowWind","HWindSpeed")] = {'vals':self.WindSpeeds, 'group':1}
 
         # # Initial Conditions: less important, trying to find them here
-        # case_inputs[("ElastoDyn","RotSpeed")] = {'vals':[7.55], 'group':0}
-        # case_inputs[("ElastoDyn","BlPitch1")] = {'vals':[3.823], 'group':0}
+        case_inputs[("ElastoDyn","PtfmMass")] = {'vals': (1.7838E+07*np.array([.8,.9,1,1.1,1.2])).tolist(), 'group':2}
+        case_inputs[("ElastoDyn","PtfmRIner")] = {'vals':(1.2507E+10*np.array([.8,.9,1,1.1,1.2])).tolist(), 'group':2}
+        case_inputs[("ElastoDyn","PtfmPIner")] = {'vals':(1.2507E+10*np.array([.8,.9,1,1.1,1.2])).tolist(), 'group':2}
+        case_inputs[("ElastoDyn","PtfmYIner")] = {'vals':(2.3667E+10*np.array([.8,.9,1,1.1,1.2])).tolist(), 'group':2}
         # case_inputs[("ElastoDyn","BlPitch2")] = case_inputs[("ElastoDyn","BlPitch1")]
         # case_inputs[("ElastoDyn","BlPitch3")] = case_inputs[("ElastoDyn","BlPitch1")]
         
@@ -464,15 +466,24 @@ class LinearFAST(runFAST_pywrapper_batch):
         """
 
         ss_opFile = os.path.join(self.FAST_steadyDirectory,'ss_ops.yaml')
+        cm_File     = os.path.join(self.FAST_steadyDirectory,'case_matrix.yaml')
+
+        steady_cm   = load_yaml(cm_File,package=1)
         self.FAST_runDirectory = self.FAST_linearDirectory
 
         ## Generate case list using General Case Generator
         ## Specify several variables that change independently or collectly
         case_inputs = {}
+
+        # Initialize case list with steady case list and flatten case matrix to group 1
+        for inp in steady_cm.keys():
+            if inp not in ['Case_ID','Case_Name']:
+                case_inputs[inp] = {'vals': steady_cm[inp], 'group': 1}
+
+
+        # General Settings: group 0
         case_inputs[("Fst","TMax")] = {'vals':[self.TMax], 'group':0}
         case_inputs[("Fst","Linearize")] = {'vals':['True'], 'group':0}
-        case_inputs[("Fst","CalcSteady")] = {'vals':['True'], 'group':0}
-
         case_inputs[("Fst","OutFileFmt")] = {'vals':[2], 'group':0}
         case_inputs[("Fst","CompMooring")] = {'vals':[0], 'group':0}
 
@@ -481,7 +492,7 @@ class LinearFAST(runFAST_pywrapper_batch):
         
         # InflowWind
         case_inputs[("InflowWind","WindType")] = {'vals':[1], 'group':0}
-        case_inputs[("InflowWind","HWindSpeed")] = {'vals':[self.WindSpeeds], 'group':1}
+        # case_inputs[("InflowWind","HWindSpeed")] = {'vals':[self.WindSpeeds], 'group':1}
 
         # AeroDyn Inputs
         case_inputs[("AeroDyn15","AFAeroMod")] = {'vals':[1], 'group':0}
@@ -519,13 +530,13 @@ class LinearFAST(runFAST_pywrapper_batch):
         for dof in self.DOFs:
             case_inputs[("ElastoDyn",dof)] = {'vals':['True'], 'group':0}
         
-        # Initial Conditions
+        # Initial Conditions, set as steady state value of steady sims
         ss_ops = load_yaml(ss_opFile)
         uu = ss_ops['Wind1VelX']
 
         for ic in ss_ops:
             if ic != 'Wind1VelX':
-                case_inputs[("ElastoDyn",ic)] = {'vals': np.interp(case_inputs[("InflowWind","HWindSpeed")]['vals'],uu,ss_ops[ic]).tolist(), 'group': 1}
+                case_inputs[("ElastoDyn",ic)] = {'vals': ss_ops[ic], 'group': 1}
 
         case_inputs[('ElastoDyn','BlPitch2')] = case_inputs[('ElastoDyn','BlPitch1')]
         case_inputs[('ElastoDyn','BlPitch3')] = case_inputs[('ElastoDyn','BlPitch1')]
@@ -542,7 +553,7 @@ class LinearFAST(runFAST_pywrapper_batch):
                 linTimeStrings.append(np.array_str(linTimes[:,iCase],max_line_width=9000,precision=3)[1:-1])
         
         case_inputs[("Fst","NLinTimes")] = {'vals':[self.NLinTimes], 'group':0}
-        # case_inputs[("Fst","LinTimes")] = {'vals':linTimeStrings, 'group':1}
+        case_inputs[("Fst","LinTimes")] = {'vals':linTimeStrings, 'group':1}
         
 
         # Generate Cases
@@ -566,28 +577,28 @@ if __name__=="__main__":
     # fast info
     linear.FAST_exe                 = '/Users/dzalkind/Tools/openfast/install/bin/openfast'   # Path to executable
     linear.FAST_InputFile           = 'IEA-15-240-RWT-UMaineSemi.fst'   # FAST input file (ext=.fst)
-    linear.FAST_directory           = '/Users/dzalkind/Tools/IEA-15-240-RWT/OpenFAST/IEA-15-240-RWT-UMaineSemiTrim'   # Path to fst directory files
-    linear.FAST_steadyDirectory     = '/Users/dzalkind/Tools/SaveData/UMaine/Steady'
-    linear.FAST_linearDirectory     = '/Users/dzalkind/Tools/SaveData/TrimTest/LinearPitch'
+    linear.FAST_directory           = '/Users/dzalkind/Tools/IEA-15-240-RWT/OpenFAST/IEA-15-240-RWT-UMaineSemi'   # Path to fst directory files
+    linear.FAST_steadyDirectory     = '/Users/dzalkind/Tools/SaveData/SweepPtfmMass/Steady'
+    linear.FAST_linearDirectory     = '/Users/dzalkind/Tools/SaveData/SweepPtfmMass/LinearPitch'
     linear.debug_level              = 2
     linear.dev_branch               = True
     linear.write_yaml               = True
 
     # linearization setup
-    linear.WindSpeeds       = 14 #[8.,10.,12.,14.,24.]
+    linear.WindSpeeds       = [14.,16,] #[8.,10.,12.,14.,24.]   # must be a list!
     linear.DOFs             = ['GenDOF','PtfmPDOF']
     linear.TMax             = 1000.
-    linear.NLinTimes        = 12
+    linear.NLinTimes        = 36
 
     #if true, there will be a lot of hydronamic states, equal to num. states in ss_exct and ss_radiation models
     linear.HydroStates      = True  
 
     # simulation setup
-    linear.parallel         = False
+    linear.parallel         = True
 
 
     # run steady state sims
-    # linear.runFAST_steady()
+    linear.runFAST_steady()
 
     # process results 
     # linear.postFAST_steady()

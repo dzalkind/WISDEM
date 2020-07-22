@@ -481,13 +481,19 @@ class InputReader_OpenFAST(InputReader_Common):
 
         # Fst
         f.readline()
-        self.fst_vt['Fst']['linearize'] = f.readline().split()[0]
-        self.fst_vt['Fst']['NLinTimes'] = f.readline().split()[0]
-        self.fst_vt['Fst']['LinTimes'] = re.findall(r'[^,\s]+', f.readline())[0:2]
-        self.fst_vt['Fst']['LinInputs'] = f.readline().split()[0]
-        self.fst_vt['Fst']['LinOutputs'] = f.readline().split()[0]
-        self.fst_vt['Fst']['LinOutJac'] = f.readline().split()[0]
-        self.fst_vt['Fst']['LinOutMod'] = f.readline().split()[0]
+        self.fst_vt['Fst']['Linearize']     = f.readline().split()[0]
+        self.fst_vt['Fst']['CalcSteady']    = bool_read(f.readline().split()[0])
+        self.fst_vt['Fst']['TrimCase']      = int(f.readline().split()[0])
+        self.fst_vt['Fst']['TrimTol']       = float_read(f.readline().split()[0])
+        self.fst_vt['Fst']['TrimGain']      = float_read(f.readline().split()[0])
+        self.fst_vt['Fst']['Twr_Kdmp']      = float_read(f.readline().split()[0])
+        self.fst_vt['Fst']['Bld_Kdmp']      = float_read(f.readline().split()[0])
+        self.fst_vt['Fst']['NLinTimes']     = f.readline().split()[0]
+        self.fst_vt['Fst']['LinTimes']      = re.findall(r'[^,\s]+', f.readline())[0:2]
+        self.fst_vt['Fst']['LinInputs']     = f.readline().split()[0]
+        self.fst_vt['Fst']['LinOutputs']    = f.readline().split()[0]
+        self.fst_vt['Fst']['LinOutJac']     = f.readline().split()[0]
+        self.fst_vt['Fst']['LinOutMod']     = f.readline().split()[0]
 
         # Visualization ()
         f.readline()

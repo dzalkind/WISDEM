@@ -53,6 +53,12 @@ Fst['OutFmt']     = ''
 
 # Fst
 Fst['Linearize']    = False         
+Fst['CalcSteady']    = False         
+Fst['TrimCase']     = 2             
+Fst['TrimTol']      = 0.001             
+Fst['TrimGain']     = 0.01             
+Fst['Twr_Kdmp']     = 0.0             
+Fst['Bld_Kdmp']     = 0.0             
 Fst['NLinTimes']    = 2             
 Fst['LinTimes']     = (30,          60)
 Fst['LinInputs']    = 1             
