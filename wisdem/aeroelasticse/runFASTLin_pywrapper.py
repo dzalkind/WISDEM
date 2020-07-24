@@ -481,7 +481,9 @@ class LinearFAST(runFAST_pywrapper_batch):
         
         # InflowWind
         case_inputs[("InflowWind","WindType")] = {'vals':[1], 'group':0}
-        case_inputs[("InflowWind","HWindSpeed")] = {'vals':[self.WindSpeeds], 'group':1}
+        if not isinstance(self.WindSpeeds,list):
+            self.WindSpeeds = [self.WindSpeeds]
+        case_inputs[("InflowWind","HWindSpeed")] = {'vals':self.WindSpeeds, 'group':1}
 
         # AeroDyn Inputs
         case_inputs[("AeroDyn15","AFAeroMod")] = {'vals':[1], 'group':0}
@@ -530,18 +532,32 @@ class LinearFAST(runFAST_pywrapper_batch):
         case_inputs[('ElastoDyn','BlPitch2')] = case_inputs[('ElastoDyn','BlPitch1')]
         case_inputs[('ElastoDyn','BlPitch3')] = case_inputs[('ElastoDyn','BlPitch1')]
 
-        # Lin Times
-        rotPer = 60. / np.array(case_inputs['ElastoDyn','RotSpeed']['vals'])
-        linTimes = np.linspace(self.TMax-100,self.TMax-100 + rotPer,num = self.NLinTimes, endpoint=False)
-        linTimeStrings = []
+        # Gen Speed to track
+        # set for now and update with GB ratio next
+        RefGenSpeed = 0.95 * np.array(case_inputs[('ElastoDyn','RotSpeed')]['vals']) * self.GBRatio
+        case_inputs[('ServoDyn','VS_RtGnSp')] = {'vals': RefGenSpeed.tolist(), 'group': 1}
 
-        if linTimes.ndim == 1:
-            linTimeStrings = np.array_str(linTimes,max_line_width=9000,precision=3)[1:-1]
-        else:
-            for iCase in range(0,linTimes.shape[1]):
-                linTimeStrings.append(np.array_str(linTimes[:,iCase],max_line_width=9000,precision=3)[1:-1])
+
+        # Lin Times
+        # rotPer = 60. / np.array(case_inputs['ElastoDyn','RotSpeed']['vals'])
+        # linTimes = np.linspace(self.TMax-100,self.TMax-100 + rotPer,num = self.NLinTimes, endpoint=False)
+        # linTimeStrings = []
+
+        # if linTimes.ndim == 1:
+        #     linTimeStrings = np.array_str(linTimes,max_line_width=9000,precision=3)[1:-1]
+        # else:
+        #     for iCase in range(0,linTimes.shape[1]):
+        #         linTimeStrings.append(np.array_str(linTimes[:,iCase],max_line_width=9000,precision=3)[1:-1])
         
         case_inputs[("Fst","NLinTimes")] = {'vals':[self.NLinTimes], 'group':0}
+
+        # Trim case depends on rated wind speed (torque below-rated, pitch above)
+        TrimCase = 3 * np.ones(len(self.WindSpeeds),dtype=int)
+        TrimCase[np.array(self.WindSpeeds) < self.v_rated] = 2
+
+        case_inputs[("Fst","TrimCase")] = {'vals':TrimCase.tolist(), 'group':1}
+
+
         # case_inputs[("Fst","LinTimes")] = {'vals':linTimeStrings, 'group':1}
         
 
@@ -573,17 +589,26 @@ if __name__=="__main__":
     linear.dev_branch               = True
     linear.write_yaml               = True
 
+    # do a read to get gearbox ratio
+    fastRead = InputReader_OpenFAST(FAST_ver='OpenFAST', dev_branch=True)
+    fastRead.FAST_InputFile = linear.FAST_InputFile   # FAST input file (ext=.fst)
+    fastRead.FAST_directory = linear.FAST_directory   # Path to fst directory files
+
+    fastRead.execute()
+
     # linearization setup
-    linear.WindSpeeds       = 14 #[8.,10.,12.,14.,24.]
+    linear.v_rated          = 10.74         # needed as input from RotorSE or something, to determine TrimCase for linearization
+    linear.GBRatio          = fastRead.fst_vt['ElastoDyn']['GBRatio']
+    linear.WindSpeeds       = [8.,10.,12.,14.,24.]
     linear.DOFs             = ['GenDOF','PtfmPDOF']
-    linear.TMax             = 1000.
+    linear.TMax             = 2000.
     linear.NLinTimes        = 12
 
     #if true, there will be a lot of hydronamic states, equal to num. states in ss_exct and ss_radiation models
     linear.HydroStates      = True  
 
     # simulation setup
-    linear.parallel         = False
+    linear.parallel         = True
 
 
     # run steady state sims
