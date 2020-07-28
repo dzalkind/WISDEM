@@ -584,7 +584,7 @@ if __name__=="__main__":
     linear.FAST_InputFile           = 'IEA-15-240-RWT-UMaineSemi.fst'   # FAST input file (ext=.fst)
     linear.FAST_directory           = '/Users/dzalkind/Tools/IEA-15-240-RWT/OpenFAST/IEA-15-240-RWT-UMaineSemiTrim'   # Path to fst directory files
     linear.FAST_steadyDirectory     = '/Users/dzalkind/Tools/SaveData/UMaine/Steady'
-    linear.FAST_linearDirectory     = '/Users/dzalkind/Tools/SaveData/TrimTest/LinearPitch'
+    linear.FAST_linearDirectory     = '/Users/dzalkind/Tools/SaveData/TrimTest/LinearTwrPit'
     linear.debug_level              = 2
     linear.dev_branch               = True
     linear.write_yaml               = True
@@ -599,8 +599,8 @@ if __name__=="__main__":
     # linearization setup
     linear.v_rated          = 10.74         # needed as input from RotorSE or something, to determine TrimCase for linearization
     linear.GBRatio          = fastRead.fst_vt['ElastoDyn']['GBRatio']
-    linear.WindSpeeds       = [8.,10.,12.,14.,24.]
-    linear.DOFs             = ['GenDOF','PtfmPDOF']
+    linear.WindSpeeds       = np.arange(5,25,1,dtype=float).tolist()   #[8.,10.,12.,14.,24.]
+    linear.DOFs             = ['GenDOF','TwFADOF1','PtfmPDOF']
     linear.TMax             = 2000.
     linear.NLinTimes        = 12
 
