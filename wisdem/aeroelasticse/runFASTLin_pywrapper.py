@@ -558,7 +558,7 @@ class LinearFAST(runFAST_pywrapper_batch):
         case_inputs[("Fst","TrimCase")] = {'vals':TrimCase.tolist(), 'group':1}
 
 
-        # case_inputs[("Fst","LinTimes")] = {'vals':linTimeStrings, 'group':1}
+        case_inputs[("Fst","TrimTol")] = {'vals':[1e-5], 'group':0}
         
 
         # Generate Cases
@@ -584,7 +584,7 @@ if __name__=="__main__":
     linear.FAST_InputFile           = 'IEA-15-240-RWT-UMaineSemi.fst'   # FAST input file (ext=.fst)
     linear.FAST_directory           = '/Users/dzalkind/Tools/IEA-15-240-RWT/OpenFAST/IEA-15-240-RWT-UMaineSemiTrim'   # Path to fst directory files
     linear.FAST_steadyDirectory     = '/Users/dzalkind/Tools/SaveData/UMaine/Steady'
-    linear.FAST_linearDirectory     = '/Users/dzalkind/Tools/SaveData/TrimTest/LinearTwrPit'
+    linear.FAST_linearDirectory     = '/Users/dzalkind/Tools/SaveData/TrimTest/LinearTwrPit_Tol1en5'
     linear.debug_level              = 2
     linear.dev_branch               = True
     linear.write_yaml               = True
