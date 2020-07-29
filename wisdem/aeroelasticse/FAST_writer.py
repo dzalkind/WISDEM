@@ -1119,7 +1119,7 @@ class InputWriter_OpenFAST(InputWriter_Common):
 
 
                 for row in polar:
-                    f.write(' '.join(['{: 2.14e}'.format(val) for val in row])+'\n')
+                    f.write(' '.join(['{: 2.14e}'.format(val) for val in row if val is not None])+'\n')
             
             f.close()
             
