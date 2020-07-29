@@ -656,14 +656,27 @@ def example_runFAST_pywrapper():
         # fast.FAST_directory = 'C:/Users/egaertne/WT_Codes/models/openfast-dev/r-test/glue-codes/openfast/5MW_OC3Spar_DLL_WTurb_WavesIrr'   # Path to fst directory files
         # fast.FAST_runDirectory = 'temp/OpenFAST'
 
-        fast.FAST_exe          = '/Users/dzalkind/Tools/openfast/install-old/bin/openfast'   # Path to executable
-        fast.FAST_InputFile    = 'IEA-15-240-RWT-UMaineSemi.fst'   # FAST input file (ext=.fst)
-        fast.FAST_directory    = "/Users/dzalkind/Tools/IEA-15-240-RWT/OpenFAST/IEA-15-240-RWT-UMaineSemi/"   # Path to fst directory files
-        fast.FAST_runDirectory = 'temp/OpenFAST'
+        test_case = 1
 
-        fast.FAST_namingOut = 'test_run_float'
+        if test_case == 1:
+            fast.FAST_exe          = '/Users/dzalkind/Tools/openfast/install-old/bin/openfast'   # Path to executable
+            fast.FAST_InputFile    = 'IEA-15-240-RWT-UMaineSemi.fst'   # FAST input file (ext=.fst)
+            fast.FAST_directory    = "/Users/dzalkind/Tools/IEA-15-240-RWT/OpenFAST/IEA-15-240-RWT-UMaineSemi/"   # Path to fst directory files
+            fast.FAST_runDirectory = 'temp/OpenFAST'
 
-        fast.dev_branch = True
+            fast.FAST_namingOut = 'test_run_float'
+
+            fast.dev_branch = True
+
+        elif test_case == 2:
+            fast.FAST_exe          = '/Users/dzalkind/Tools/openfast/install-old/bin/openfast'   # Path to executable
+            fast.FAST_InputFile    = 'IEA-15-240-RWT-UMaineSemi.fst'   # FAST input file (ext=.fst)
+            fast.FAST_directory    = "/Users/dzalkind/Tools/IEA-15-240-RWT/OpenFAST/IEA-15-240-RWT-UMaineSemi/"   # Path to fst directory files
+            fast.FAST_runDirectory = 'temp/OpenFAST'
+
+            fast.FAST_namingOut = 'test_run_float'
+
+            fast.dev_branch = True
 
 
         fast.read_yaml = False
@@ -677,8 +690,8 @@ def example_runFAST_pywrapper():
 
 if __name__=="__main__":
 
-    # example_runFAST_pywrapper()
+    example_runFAST_pywrapper()
     #example_runFAST_pywrapper_batch()
     #example_runFAST_CaseGenIEC()
     # NASA_runFAST_CaseGenIEC()
-    runFAST_TestROSCO()
+    # runFAST_TestROSCO()
