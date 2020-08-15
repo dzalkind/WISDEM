@@ -450,6 +450,8 @@ AeroDyn15['TwrShadow']      = False
 AeroDyn15['TwrAero']        = False
 AeroDyn15['FrozenWake']     = False
 AeroDyn15['CavitCheck']     = False
+AeroDyn15['CompAA']     = False
+AeroDyn15['AA_InputFile']     = ''
 
 AeroDyn15['AirDens']        = 0.0
 AeroDyn15['KinVisc']        = 0.0
@@ -470,6 +472,8 @@ AeroDyn15['MaxIter']        = 0
 
 AeroDyn15['DBEMT_Mod']      = 2
 AeroDyn15['tau1_const']     = 4
+
+AeroDyn15['OLAFInputFileName'] = ''
 
 AeroDyn15['UAMod']          = 0
 AeroDyn15['FLookup']        = False

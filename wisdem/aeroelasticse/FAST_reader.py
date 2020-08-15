@@ -1017,6 +1017,9 @@ class InputReader_OpenFAST(InputReader_Common):
         self.fst_vt['AeroDyn15']['FrozenWake']    = bool_read(f.readline().split()[0])
         if self.FAST_ver.lower() != 'fast8':
                 self.fst_vt['AeroDyn15']['CavitCheck']    = bool_read(f.readline().split()[0])
+        if self.dev_branch:
+            self.fst_vt['AeroDyn15']['CompAA']          = bool_read(f.readline().split()[0])
+            self.fst_vt['AeroDyn15']['AA_InputFile']    = f.readline().split()[0][1:-1]
 
         # Environmental Conditions
         f.readline()
@@ -1046,6 +1049,11 @@ class InputReader_OpenFAST(InputReader_Common):
             f.readline()
             self.fst_vt['AeroDyn15']['DBEMT_Mod']          = int(f.readline().split()[0])
             self.fst_vt['AeroDyn15']['tau1_const']         = int(f.readline().split()[0])
+
+        # OLAF -- cOnvecting LAgrangian Filaments (Free Vortex Wake) Theory Options
+        if self.dev_branch:
+            f.readline()
+            self.fst_vt['AeroDyn15']['OLAFInputFileName']   = f.readline().split()[0][1:-1]
 
         # Beddoes-Leishman Unsteady Airfoil Aerodynamics Options
         f.readline()
@@ -1165,6 +1173,7 @@ class InputReader_OpenFAST(InputReader_Common):
             polar['InterpOrd']      = int_read(readline_filterComments(f).split()[0])
             polar['NonDimArea']     = int_read(readline_filterComments(f).split()[0])
             polar['NumCoords']      = readline_filterComments(f).split()[0]
+            polar['BL_file']        = readline_filterComments(f).split()[0]
             polar['NumTabs']        = int_read(readline_filterComments(f).split()[0])
             self.fst_vt['AeroDyn15']['af_data'][afi] = [None]*polar['NumTabs']
 
@@ -1388,7 +1397,7 @@ class InputReader_OpenFAST(InputReader_Common):
         # Read the Bladed style Interface controller input file, intended for ROSCO https://github.com/NREL/ROSCO_toolbox
 
         discon_in_file = os.path.normpath(os.path.join(self.FAST_directory, self.fst_vt['ServoDyn']['DLL_InFile']))
-
+        
         if os.path.exists(discon_in_file):
 
             # Read DISCON infiles
@@ -1420,6 +1429,7 @@ class InputReader_OpenFAST(InputReader_Common):
             
             # Add some DISCON entries that might be needed within WISDEM        
             self.fst_vt['DISCON_in']['v_rated'] = 1.
+            print(self.fst_vt['DISCON_in']['SD_Mode'])
         
         else:
             del self.fst_vt['DISCON_in']
