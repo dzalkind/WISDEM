@@ -113,39 +113,38 @@ class WT_RNTA(om.Group):
 
         self.add_subsystem("tcc", Turbine_CostsSE_2015(verbosity=modeling_options["General"]["verbosity"]))
 
-        if not modeling_options["flags"]["vawt"]: # YL: Don't want rotorSE for vawt, do we want to condition all connections?
-            if modeling_options["flags"]["blade"]:
-                n_span = modeling_options["WISDEM"]["RotorSE"]["n_span"]
+        if modeling_options["flags"]["blade"] and not modeling_options["flags"]["vawt"]: # YL: Don't want rotorSE for vawt, do we want to condition all connections?
+            n_span = modeling_options["WISDEM"]["RotorSE"]["n_span"]
 
-                self.connect("blade.pa.chord_param", "blade.compute_reynolds.chord")
-                self.connect("env.rho_air", "blade.compute_reynolds.rho")
-                self.connect("env.mu_air", "blade.compute_reynolds.mu")
+            self.connect("blade.pa.chord_param", "blade.compute_reynolds.chord")
+            self.connect("env.rho_air", "blade.compute_reynolds.rho")
+            self.connect("env.mu_air", "blade.compute_reynolds.mu")
 
-                # Conncetions to ccblade
-                self.connect("blade.pa.chord_param", "rotorse.chord")
-                self.connect("blade.pa.twist_param", "rotorse.ccblade.theta_in")
-                self.connect("blade.opt_var.s_opt_chord", "rotorse.ccblade.s_opt_chord")
-                self.connect("blade.opt_var.s_opt_twist", "rotorse.ccblade.s_opt_theta")
-                self.connect("blade.outer_shape_bem.s", "rotorse.s")
-                self.connect("blade.high_level_blade_props.r_blade", "rotorse.r")
-                self.connect("blade.high_level_blade_props.Rtip", "rotorse.Rtip")
-                self.connect("hub.radius", "rotorse.Rhub")
-                self.connect("blade.interp_airfoils.r_thick_interp", "rotorse.ccblade.rthick")
-                self.connect("airfoils.aoa", "rotorse.airfoils_aoa")
-                self.connect("airfoils.Re", "rotorse.airfoils_Re")
-                self.connect("af_3d.cl_corrected", "rotorse.airfoils_cl")
-                self.connect("af_3d.cd_corrected", "rotorse.airfoils_cd")
-                self.connect("af_3d.cm_corrected", "rotorse.airfoils_cm")
-                if modeling_options["WISDEM"]["RotorSE"]["inn_af"]:
-                    self.connect("blade.run_inn_af.aoa_inn", "rotorse.ccblade.aoa_op")
-                self.connect("high_level_tower_props.hub_height", "rotorse.hub_height")
-                self.connect("hub.cone", "rotorse.precone")
-                self.connect("nacelle.uptilt", "rotorse.tilt")
+            # Conncetions to ccblade
+            self.connect("blade.pa.chord_param", "rotorse.chord")
+            self.connect("blade.pa.twist_param", "rotorse.ccblade.theta_in")
+            self.connect("blade.opt_var.s_opt_chord", "rotorse.ccblade.s_opt_chord")
+            self.connect("blade.opt_var.s_opt_twist", "rotorse.ccblade.s_opt_theta")
+            self.connect("blade.outer_shape_bem.s", "rotorse.s")
+            self.connect("blade.high_level_blade_props.r_blade", "rotorse.r")
+            self.connect("blade.high_level_blade_props.Rtip", "rotorse.Rtip")
+            self.connect("hub.radius", "rotorse.Rhub")
+            self.connect("blade.interp_airfoils.r_thick_interp", "rotorse.ccblade.rthick")
+            self.connect("airfoils.aoa", "rotorse.airfoils_aoa")
+            self.connect("airfoils.Re", "rotorse.airfoils_Re")
+            self.connect("af_3d.cl_corrected", "rotorse.airfoils_cl")
+            self.connect("af_3d.cd_corrected", "rotorse.airfoils_cd")
+            self.connect("af_3d.cm_corrected", "rotorse.airfoils_cm")
+            if modeling_options["WISDEM"]["RotorSE"]["inn_af"]:
+                self.connect("blade.run_inn_af.aoa_inn", "rotorse.ccblade.aoa_op")
+            self.connect("high_level_tower_props.hub_height", "rotorse.hub_height")
+            self.connect("hub.cone", "rotorse.precone")
+            self.connect("nacelle.uptilt", "rotorse.tilt")
 
-                self.connect("blade.high_level_blade_props.prebend", "rotorse.precurve")
-                self.connect("blade.high_level_blade_props.prebendTip", "rotorse.precurveTip")
-                self.connect("blade.high_level_blade_props.presweep", "rotorse.presweep")
-                self.connect("blade.high_level_blade_props.presweepTip", "rotorse.presweepTip")
+            self.connect("blade.high_level_blade_props.prebend", "rotorse.precurve")
+            self.connect("blade.high_level_blade_props.prebendTip", "rotorse.precurveTip")
+            self.connect("blade.high_level_blade_props.presweep", "rotorse.presweep")
+            self.connect("blade.high_level_blade_props.presweepTip", "rotorse.presweepTip")
 
             if modeling_options["flags"]["control"]:
                 self.connect("control.rated_pitch", "rotorse.pitch")
