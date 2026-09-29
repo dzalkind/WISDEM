@@ -101,8 +101,10 @@ jobs:
         if: false == contains( matrix.os, 'windows')
         uses: awvwgk/setup-fortran@v1
 
+      # macOS runners already ship Apple clang; installing llvm via Homebrew
+      # builds from source on untiered images (e.g. macos-14) and breaks.
       - name: Install compiler
-        if: false == contains( matrix.os, 'windows')
+        if: contains( matrix.os, 'ubuntu')
         id: install_cc
         uses: rlalik/setup-cpp-compiler@master
         with:
@@ -128,10 +130,16 @@ jobs:
             update-environment: true
 
       - name: Set compilers
-        if: false == contains( matrix.os, 'windows')
+        if: contains( matrix.os, 'ubuntu')
         run: |
             echo "CC=${{ steps.install_cc.outputs.cc }}" >> $GITHUB_ENV
             echo "CXX=${{ steps.install_cc.outputs.cxx }}" >> $GITHUB_ENV
+
+      - name: Set compilers mac
+        if: contains( matrix.os, 'mac')
+        run: |
+            echo "CC=clang" >> $GITHUB_ENV
+            echo "CXX=clang++" >> $GITHUB_ENV
 
       - name: Install WISDEM with setup
         env:
